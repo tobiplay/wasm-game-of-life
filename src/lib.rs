@@ -209,6 +209,25 @@ impl Universe {
     pub fn render(&self) -> String {
         self.to_string()
     }
+
+    // A couple more getter functions for our Universe,
+    // which will be exposed to the JavaScript API.
+
+    /// Returns the `width` of the `Universe`.
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    /// Returns the `height` of the `Universe`.
+    pub fn height(&self) -> u32 {
+        self.height
+    }
+
+    /// Returns a raw pointer to the `cells` of
+    /// the `Universe`.
+    pub fn cells(&self) -> *const Cell {
+        self.cells.as_ptr()
+    }
 }
 
 // Implementing the Display trait from Rust's standard library for Universe
