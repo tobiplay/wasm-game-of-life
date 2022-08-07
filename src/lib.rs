@@ -1,6 +1,9 @@
 mod utils;
 
 use wasm_bindgen::prelude::*;
+// We need the std::fmt tools to print
+// game state to the terminal:
+use std::fmt;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -120,6 +123,11 @@ impl Universe {
 #[wasm_bindgen]
 impl Universe {
     /// Advances the time t one tick in time (= delta).
+    ///
+    /// We achieve an advance in time by one tick by
+    /// calculating the new state of each cell in the
+    /// array (`Vec<Cell>`) and overwriting the
+    /// previous state.
     pub fn tick(&mut self) {
         // Clone the current cells into a new vector:
         let mut next = self.cells.clone();
@@ -151,7 +159,7 @@ impl Universe {
                     (otherwise, _) => otherwise,
                 };
 
-                // Insert the next_cell into the array of
+                // Insert the `next_cell` into the array of
                 // cells at the next tick in time:
                 next[idx] = next_cell;
             }
@@ -160,5 +168,68 @@ impl Universe {
         // Overwrite the current array of cells with
         // those at the current time plus one tick:
         self.cells = next;
+    }
+
+    /// Creates and returns an instance of `Universe`.
+    ///
+    /// This specific instance has a `width` and `height`
+    /// of 64.
+    pub fn new() -> Universe {
+        let width = 64;
+        let height = 64;
+        // Create a range of cells with the correct
+        // number of entries based on the width and height
+        // of the Universe:
+        let cells = (0..width * height)
+            // And for each cell we map the following function
+            // via a closure: if its index is divisable by 2
+            // or by 7, it's a living cell. Otherwise it's dead.
+            .map(|i| {
+                if i % 2 == 0 || i % 7 == 0 {
+                    Cell::Alive
+                } else {
+                    Cell::Dead
+                }
+            })
+            // Collect all cells into a vector:
+            .collect();
+
+        // Return the universe:
+        Universe {
+            width,
+            height,
+            cells,
+        }
+    }
+
+    /// Returns the `Universe` as a `String`.
+    ///
+    /// This is possible, because we implemented the
+    /// `Display` trait for `Universe`.
+    pub fn render(&self) -> String {
+        self.to_string()
+    }
+}
+
+// Implementing the Display trait from Rust's standard library for Universe
+// allows us to format the struct in a user-facing manner. We also gain
+// access to the to_string method.
+impl fmt::Display for Universe {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // Slice the 2D array into lines based on the
+        // width of a chunk which is also the width
+        // of the Universe instance:
+        for line in self.cells.as_slice().chunks(self.width as usize) {
+            // For each cell in a line we then determine its state and write the
+            // correct symbol:
+            for &cell in line {
+                let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
+                write!(f, "{}", symbol)?;
+            }
+            // Jump to the next line after the end of the previous one:
+            write!(f, "\n")?;
+        }
+
+        Ok(())
     }
 }
