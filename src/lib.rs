@@ -11,6 +11,16 @@ use std::fmt;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
+// Pull extern crate `web_sys` into scope:
+extern crate web_sys;
+
+// A macro to provide `println!(..)`-style syntax for `console.log` logging.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
 #[wasm_bindgen]
 extern "C" {
     fn alert(s: &str);
@@ -22,12 +32,12 @@ pub fn greet() {
 }
 
 #[wasm_bindgen]
-// This allows for each cell to be represented as a single byte:
+// This allows for each `Cell` to be represented as a single byte:
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-/// A Cell is one single square in our universe.
+/// A `Cell` is one single square in our `Universe`.
 ///
-/// It either is Dead (0) or Alive (1).
+/// It either is `Dead` (0) or `Alive` (1).
 pub enum Cell {
     Dead = 0,
     Alive = 1,
@@ -75,7 +85,6 @@ impl Universe {
     /// The method panics if at least one of `row` and
     /// `column` is negative.
     fn get_index(&self, row: u32, column: u32) -> usize {
-        assert!(row > 0 && column > 0);
         (row * self.width + column) as usize
     }
 
@@ -118,11 +127,11 @@ impl Universe {
     }
 }
 
-// These methods for Universe will be exposed to the
+// These methods for `Universe` will be exposed to the
 // JavaScript API:
 #[wasm_bindgen]
 impl Universe {
-    /// Advances the time t one tick in time (= delta).
+    /// Advances the time t one tick in time (= delta t).
     ///
     /// We achieve an advance in time by one tick by
     /// calculating the new state of each cell in the
@@ -140,6 +149,14 @@ impl Universe {
                 let cell = self.cells[idx];
                 // Count the number of living neighbors:
                 let live_neighbors = self.live_neighbor_count(row, col);
+                
+                log!(
+                    "cell[{}, {}] is initially {:?} and has {} live neighbors",
+                    row,
+                    col,
+                    cell,
+                    live_neighbors
+                );
 
                 // Determine the state of the cell in the next tick in time:
                 let next_cell = match (cell, live_neighbors) {
@@ -159,6 +176,8 @@ impl Universe {
                     (otherwise, _) => otherwise,
                 };
 
+                log!("It becomes {:?}", next_cell);
+
                 // Insert the `next_cell` into the array of
                 // cells at the next tick in time:
                 next[idx] = next_cell;
@@ -175,6 +194,11 @@ impl Universe {
     /// This specific instance has a `width` and `height`
     /// of 64.
     pub fn new() -> Universe {
+        // Enable logging for when our code panics.
+        // This is achieved by invoking the set_panic_hook()
+        // once somewhere in our code.
+        utils::set_panic_hook();
+
         let width = 64;
         let height = 64;
         // Create a range of cells with the correct
