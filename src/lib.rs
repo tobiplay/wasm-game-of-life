@@ -149,7 +149,7 @@ impl Universe {
                 let cell = self.cells[idx];
                 // Count the number of living neighbors:
                 let live_neighbors = self.live_neighbor_count(row, col);
-                
+
                 log!(
                     "cell[{}, {}] is initially {:?} and has {} live neighbors",
                     row,
