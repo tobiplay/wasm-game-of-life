@@ -12,6 +12,11 @@ default = ["console_error_panic_hook"]
 
 [dependencies]
 wasm-bindgen = "0.2.63"
+rand = "0.8.5"
+# We have to feature the getrandom crate due to the unknown
+# target not being a viable compilation target via WASM for
+# the rand crate without the "js" feature.
+getrandom = { version = "0.2", features = ["js"] }
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires

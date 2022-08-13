@@ -1,6 +1,6 @@
 import * as wasm from "wasm-game-of-life";
 // Specifically import the Universe struct:
-import { Universe, Cell } from "wasm-game-of-life";
+import { Universe, Cell, UniverseOption } from "wasm-game-of-life";
 // Import the WebAssembly memory at the top of the file.
 import { memory } from "wasm-game-of-life/wasm_game_of_life_bg";
 
@@ -10,10 +10,13 @@ const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
 
+// We dynamically decide what type of starting universe
+// to render based on this very option:
+const universe_option = UniverseOption.TwoSeven;
 // Construct the universe, and get its width and height.
 // The constructor function was built in Rust and compiled
 // to WASM.
-const universe = Universe.new();
+const universe = Universe.new(universe_option);
 const width = universe.width();
 const height = universe.height();
 
@@ -33,6 +36,8 @@ const ctx = canvas.getContext("2d");
 // it draws the current universe to the <canvas>,
 // and then calls Universe::tick to advance one tick.
 const renderLoop = () => {
+    // Place a debugger checkpoint:
+    debugger;
     // Tick once, after we had already called the
     // first tick before:
     universe.tick();
@@ -49,7 +54,7 @@ const renderLoop = () => {
 // To draw the grid between cells, we draw a set of equally-spaced
 // horizontal lines, and a set of equally-spaced vertical lines.
 // These lines criss-cross to form the grid.
-/** Draws the grid on the `<canvas>`. */
+/** Draws the grid on the `<canvas>` element. */
 const drawGrid = () => {
     // Inside the <canvas> (grabbed via context):
     ctx.beginPath();
@@ -127,8 +132,8 @@ const drawCells = () => {
 // the cells is so that the initial state of the universe
 // is drawn before we make modifications by entering the
 // renderLoop portion:
-drawGrid();
 drawCells();
+drawGrid();
 requestAnimationFrame(renderLoop);
 
 // var button = document.createElement("button");

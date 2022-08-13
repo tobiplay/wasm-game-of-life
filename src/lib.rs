@@ -5,6 +5,9 @@ use wasm_bindgen::prelude::*;
 // game state to the terminal:
 use std::fmt;
 
+// Crate to generate random numbers:
+use rand::Rng;
+
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
@@ -49,10 +52,20 @@ pub enum Cell {
 /// Each `Universe` is defined by a `width` and `height`,
 /// which make up the grid and possible spots for all
 /// `Cell` instances.
+#[derive(PartialEq)]
 pub struct Universe {
     width: u32,
     height: u32,
     cells: Vec<Cell>,
+    universe_option: UniverseOption,
+}
+
+#[wasm_bindgen]
+#[derive(PartialEq)]
+pub enum UniverseOption {
+    Random,
+    TwoSeven,
+    Dead,
 }
 
 // These functions won't be exposed to JavaScript as
@@ -71,11 +84,16 @@ impl Universe {
     /// with both a `width` and `height` of 3. We're looking
     /// for the `Cell` in the second row and second column,
     /// so the bottom right 'Cell', which contains a 8.
-    /// ```
-    /// [[0, 1, 2],
-    ///  [3, 4, 5],
-    ///  [6, 7, 8]]
-    /// ```
+    /// The following matrix shows the columns and rows from
+    /// 1 through 3.
+    ///
+    /// | | | | |
+    /// |---|---|---|---|
+    /// | | 1 | 2 | 3 |
+    /// | 1 | 0 | 1 | 2 |
+    /// | 2 | 3 | 4 | 5 |
+    /// | 3 | 6 | 7 | 8 |
+    ///
     /// We first multiply the `row` (2) and `width` of the
     /// `Universe` (3) and add the `column` (2). We get
     /// 8 as a result, which is exactly the index
@@ -150,13 +168,14 @@ impl Universe {
                 // Count the number of living neighbors:
                 let live_neighbors = self.live_neighbor_count(row, col);
 
-                log!(
-                    "cell[{}, {}] is initially {:?} and has {} live neighbors",
-                    row,
-                    col,
-                    cell,
-                    live_neighbors
-                );
+                // Log the amount of living cells and initial state to console output:
+                // log!(
+                //     "cell[{}, {}] is initially {:?} and has {} live neighbors",
+                //     row,
+                //     col,
+                //     cell,
+                //     live_neighbors
+                // );
 
                 // Determine the state of the cell in the next tick in time:
                 let next_cell = match (cell, live_neighbors) {
@@ -176,7 +195,8 @@ impl Universe {
                     (otherwise, _) => otherwise,
                 };
 
-                log!("It becomes {:?}", next_cell);
+                // Log state change of each cell to console output:
+                // log!("It becomes {:?}", next_cell);
 
                 // Insert the `next_cell` into the array of
                 // cells at the next tick in time:
@@ -192,37 +212,93 @@ impl Universe {
     /// Creates and returns an instance of `Universe`.
     ///
     /// This specific instance has a `width` and `height`
-    /// of 64.
-    pub fn new() -> Universe {
+    /// of 64. Takes an `UniverseOption` as an option, which
+    /// allows for different starting universes. This state
+    /// can be `TwoSeven`, where the index of each living starting
+    /// cell was either divisible by 2 or 7, `Dead` or `Random`.
+    pub fn new(universe_option: UniverseOption) -> Universe {
         // Enable logging for when our code panics.
         // This is achieved by invoking the set_panic_hook()
         // once somewhere in our code.
         utils::set_panic_hook();
 
+        let universe_option = universe_option;
         let width = 64;
         let height = 64;
+
+        /// Returns a vector of random `Cell` instances.
+        ///
+        /// The function takes in the `width` and `height` of
+        /// the specifc universe as references.
+        fn random_cells(width: &u32, height: &u32) -> Vec<Cell> {
+            // Init a RNG thread:
+            let mut rng = rand::thread_rng();
+
+            let cells = (0..width * height)
+                // And for each cell we map the following function
+                // via a closure: if its index is divisable by 2
+                // or by 7, it's a living cell. Otherwise it's dead.
+                .map(|i| {
+                    if rng.gen_range(0..=1) == 1 {
+                        Cell::Alive
+                    } else {
+                        Cell::Dead
+                    }
+                })
+                // Collect all cells into a vector:
+                .collect();
+
+            cells
+        }
+
+        /// Returns a vector of `Cell` instances in a specific pattern.
+        ///
+        /// The function takes in the `width` and `height` of
+        /// the specifc universe as references. A living `Cell` is found
+        /// at the start where the index of the cell is divisible by
+        /// either 2 or 7.
+        fn two_seven_cells(width: &u32, height: &u32) -> Vec<Cell> {
+            let cells = (0..width * height)
+                // And for each cell we map the following function
+                // via a closure: if its index is divisable by 2
+                // or by 7, it's a living cell. Otherwise it's dead.
+                .map(|i| {
+                    if i % 2 == 0 || i % 7 == 0 {
+                        Cell::Alive
+                    } else {
+                        Cell::Dead
+                    }
+                })
+                // Collect all cells into a vector:
+                .collect();
+
+            cells
+        }
+
+        /// Returns a vector of only dead `Cell` instances.
+        ///
+        /// The function takes in the `width` and `height` of
+        /// the specifc universe as references.
+        fn dead_cells(width: &u32, height: &u32) -> Vec<Cell> {
+            let cells = (0..width * height).map(|i| Cell::Dead).collect();
+            cells
+        }
+
         // Create a range of cells with the correct
         // number of entries based on the width and height
         // of the Universe:
-        let cells = (0..width * height)
-            // And for each cell we map the following function
-            // via a closure: if its index is divisable by 2
-            // or by 7, it's a living cell. Otherwise it's dead.
-            .map(|i| {
-                if i % 2 == 0 || i % 7 == 0 {
-                    Cell::Alive
-                } else {
-                    Cell::Dead
-                }
-            })
-            // Collect all cells into a vector:
-            .collect();
+        let cells: Vec<Cell> = match universe_option {
+            UniverseOption::Dead => dead_cells(&width, &height),
+            UniverseOption::Random => random_cells(&width, &height),
+            UniverseOption::TwoSeven => two_seven_cells(&width, &height),
+        };
 
         // Return the universe:
         Universe {
             width,
             height,
             cells,
+            universe_option,
         }
     }
 
@@ -274,5 +350,76 @@ impl fmt::Display for Universe {
         }
 
         Ok(())
+    }
+}
+
+// Tests
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    /// Asserts that every property of the `Universe` struct was assigned.
+    fn can_create_universe() {
+        let universe = Universe::new(UniverseOption::TwoSeven);
+        assert!(
+            universe.height > 0
+                && universe.width > 0
+                && universe.cells.len() == universe.height as usize * universe.width as usize
+        );
+    }
+
+    #[test]
+    /// Calls every getter function that is going to be exposed to the JavaScript API.
+    ///
+    /// The JavaScript API and WASM are glued together via the `wasm_bindgen` glue,
+    /// which relies on public getter functions to work with `Universe` and `Cell`
+    /// structs outside of the Rust source.
+    fn can_call_universe_getters() {
+        // We test the getter functions on our basic TwoSeven universe.
+        let universe = Universe::new(UniverseOption::TwoSeven);
+        assert!(
+            universe.height == universe.height()
+                && universe.width == universe.width()
+                && universe.cells.as_ptr() == universe.cells()
+        );
+    }
+
+    #[test]
+    /// Checks if the `Dead` option actually does not create a living cell.
+    fn no_living_cells() {
+        // To test the live_neighbor_count function we rely on
+        // the Dead option for our universe. Here, no single cell
+        // should be alive.
+        let universe = Universe::new(UniverseOption::Dead);
+        let count = universe.live_neighbor_count(1, 1);
+        assert_eq!(count, 0);
+    }
+
+    #[test]
+    /// Checks the the pattern created by the `TwoSeven` `UniverseOption`.
+    fn two_seven_cells() {
+        let universe = Universe::new(UniverseOption::TwoSeven);
+        let count = universe.live_neighbor_count(1, 1);
+        assert_eq!(count, 6);
+    }
+
+    #[test]
+    /// Tests if the `tick` method does advance the board one tick in time.
+    ///
+    /// We use the `TwoSeven` option here, because it's easier to debug
+    /// when the board is always the same.
+    fn tick_does_advance() {
+        let mut universe = Universe::new(UniverseOption::TwoSeven);
+        // The cell at row 0, column 0 starts off as a living cell,
+        // because its index is 0 and therefore divisible by 2.
+        // The first cell should therefore be alive at the start:
+        assert!(universe.cells[0] == Cell::Alive);
+
+        // Advance one tick in time:
+        universe.tick();
+
+        // The cell should now be dead.
+        assert!(universe.cells[0] == Cell::Dead)
     }
 }
