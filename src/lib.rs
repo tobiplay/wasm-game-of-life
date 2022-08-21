@@ -46,6 +46,17 @@ pub enum Cell {
     Alive = 1,
 }
 
+impl Cell {
+    fn toggle(&mut self) {
+        // Dereference the borrowd cell and match
+        // against the two possible states:
+        *self = match *self {
+            Cell::Dead => Cell::Alive,
+            Cell::Alive => Cell::Dead,
+        };
+    }
+}
+
 #[wasm_bindgen]
 /// The `Universe` stores a collection of `Cell` instances.
 ///
@@ -308,6 +319,12 @@ impl Universe {
     /// `Display` trait for `Universe`.
     pub fn render(&self) -> String {
         self.to_string()
+    }
+
+    /// Toggles the state of a cell.
+    pub fn toggle_cell(&mut self, row: u32, column: u32) {
+        let idx = self.get_index(row, column);
+        self.cells[idx].toggle();
     }
 
     // A couple more getter functions for our Universe,
