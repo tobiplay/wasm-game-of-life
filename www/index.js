@@ -12,7 +12,7 @@ const ALIVE_COLOR = "#000000";
 
 // We dynamically decide what type of starting universe
 // to render based on this very option:
-const universe_option = UniverseOption.TwoSeven;
+const universe_option = UniverseOption.Random;
 // Construct the universe, and get its width and height.
 // The constructor function was built in Rust and compiled
 // to WASM.
@@ -31,6 +31,36 @@ canvas.width = (CELL_SIZE + 1) * width + 1;
 // Grab the canvas as a 2D context.
 const ctx = canvas.getContext("2d");
 
+// Grab the button.
+const playPauseButton = document.getElementById("play-pause");
+
+const play = () => {
+    playPauseButton.textContent = "⏸";
+    // Restart the animation by requesting the renderLoop:
+    renderLoop();
+};
+
+const pause = () => {
+    playPauseButton.textContent = "▶";
+    // Cancel the animation via the animationId:
+    cancelAnimationFrame(animationId);
+    animationId = null;
+};
+
+playPauseButton.addEventListener("click", (e) => {
+    isPaused() ? play() : pause();
+});
+
+// We store an animationId, which will be used
+// as an identifier to stop and continue the loop.
+let animationId = null;
+
+// We can tell if the renderLoop is paused
+// by checking the animationId.
+const isPaused = () => {
+    return animationId === null;
+};
+
 // The JavaScript portion of our program runs in a
 // requestAnimationFrame loop. On each iteration,
 // it draws the current universe to the <canvas>,
@@ -47,8 +77,8 @@ const renderLoop = () => {
 
     // console.log(universe.render());
 
-    // Invoke the loop:
-    requestAnimationFrame(renderLoop);
+    // Invoke the loop and store the animationId.
+    animationId = requestAnimationFrame(renderLoop);
 };
 
 // To draw the grid between cells, we draw a set of equally-spaced
@@ -134,12 +164,12 @@ const drawCells = () => {
 // renderLoop portion:
 drawCells();
 drawGrid();
-requestAnimationFrame(renderLoop);
+play();
 
-var button = document.createElement("button");
-button.innerHTML = "Do Something";
+// var button = document.createElement("button");
+// button.innerHTML = "Do Something";
 
-var body = document.getElementsByTagName("body")[0];
-body.appendChild(button);
+// var body = document.getElementsByTagName("body")[0];
+// body.appendChild(button);
 
-button.addEventListener("click", () => {});
+// button.addEventListener("click", () => {});
