@@ -439,4 +439,18 @@ mod tests {
         // The cell should now be dead.
         assert!(universe.cells[0] == Cell::Dead)
     }
+
+    #[test]
+    fn can_toggle_cell() {
+        let mut universe = Universe::new(UniverseOption::TwoSeven);
+        // The cell at row 0, column 0 starts off as a living cell,
+        // so this test should fail if the cell is not toggled to a dead.
+        assert_ne!(universe.cells[0], Cell::Dead);
+
+        // Now that we know that the cell is alive, we toggle it to dead:
+        universe.toggle_cell(0, 0);
+
+        // Because we DON'T advance one tick in time, the cell should now be dead.
+        assert_eq!(universe.cells[0], Cell::Dead);
+    }
 }

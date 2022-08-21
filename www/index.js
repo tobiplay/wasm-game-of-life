@@ -10,15 +10,37 @@ const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
 
+// Init a new universe with the default option (Dead):
+let universe = Universe.new(UniverseOption.Dead);
+
 // We dynamically decide what type of starting universe
-// to render based on this very option:
-const universe_option = UniverseOption.Random;
-// Construct the universe, and get its width and height.
-// The constructor function was built in Rust and compiled
-// to WASM.
-const universe = Universe.new(universe_option);
-const width = universe.width();
-const height = universe.height();
+// to render based on the universeSelector, which can be used
+// by the user on the front-end. We therefore grab the value
+// of the select-universe element:
+const universeSelector = document.getElementById("select-universe");
+
+// And listen to any changes on it:
+universeSelector.onchange = () => {
+    let selectedUniverseOption = universeSelector.value;
+    console.log(selectedUniverseOption);
+
+    let universeOption = null;
+
+    if (selectedUniverseOption === "Random") {
+        universeOption = UniverseOption.Random;
+    } else if (selectedUniverseOption === "TwoSeven") {
+        universeOption = UniverseOption.TwoSeven;
+    } else {
+        universeOption = UniverseOption.Dead;
+    }
+
+    universe = Universe.new(universeOption);
+    drawCells();
+};
+
+// Now that an universe exists, we can grab the height and width:
+let width = universe.width();
+let height = universe.height();
 
 // Grab the <canvas> element from the DOM:
 const canvas = document.getElementById("game-of-life-canvas");
@@ -31,18 +53,31 @@ canvas.width = (CELL_SIZE + 1) * width + 1;
 // Grab the canvas as a 2D context.
 const ctx = canvas.getContext("2d");
 
+// Compute the click action on the canvas element.
 canvas.addEventListener("click", (e) => {
+    // We listen to the click event within the rectangle that
+    // makes up the canvas element:F
     const boundingRect = canvas.getBoundingClientRect();
 
+    // We calculate the relative scale in X and Y direction:
     const scaleX = canvas.width / boundingRect.width;
     const scaleY = canvas.height / boundingRect.height;
 
+    // We calculate the position of the click within the rectangle:
     const canvasLeft = (e.clientX - boundingRect.left) * scaleX;
     const canvasTop = (e.clientY - boundingRect.top) * scaleY;
 
+    // Transform coursor (click) position into a row and col.
+    // We divide the position within the canvas by the size of each cell.
+    // This yields the amount of cells. We have to add 1 to each cell size,
+    // due to the border. We then take the floor of that, because we want to
+    // stay within a certain cell. We take the minimum of that result
+    // and 1 px less than the height of the `Universe` in cases where we might
+    // land exactly on the border.
     const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
     const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
 
+    // Toggle the cell state via the WASM function:
     universe.toggle_cell(row, col);
 
     // Redraw the cells after the click:
@@ -53,13 +88,13 @@ canvas.addEventListener("click", (e) => {
 const playPauseButton = document.getElementById("play-pause");
 
 const play = () => {
-    playPauseButton.textContent = "⏸";
+    playPauseButton.textContent = "Pause";
     // Restart the animation by requesting the renderLoop:
     renderLoop();
 };
 
 const pause = () => {
-    playPauseButton.textContent = "▶";
+    playPauseButton.textContent = "Play";
     // Cancel the animation via the animationId:
     cancelAnimationFrame(animationId);
     animationId = null;
@@ -182,7 +217,7 @@ const drawCells = () => {
 // renderLoop portion:
 drawCells();
 drawGrid();
-play();
+pause();
 
 // var button = document.createElement("button");
 // button.innerHTML = "Do Something";

@@ -10,7 +10,18 @@
             This page contains webassembly and JavaScript content, please enable
             JavaScript in your browser.
         </noscript>
+        <br>
+        <forms>
+            <label for="select-universe">Choose a starting universe:</label>
+            <select name="select-universe" id="select-universe">
+                <option value="Empty">Empty</option>
+                <option value="TwoSeven">TwoSeven</option>
+                <option value="Random">Random</option>
+            </select>
+        </form>
+        <br>
         <button id="play-pause"></button>
+        <br>
         <canvas id="game-of-life-canvas"></canvas>
         <script src="./bootstrap.js"></script>
     </body>
