@@ -22,7 +22,6 @@ const universeSelector = document.getElementById("select-universe");
 // And listen to any changes on it:
 universeSelector.onchange = () => {
     let selectedUniverseOption = universeSelector.value;
-    console.log(selectedUniverseOption);
 
     let universeOption = null;
 

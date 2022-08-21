@@ -55,14 +55,8 @@
 /******/ 		"../pkg/wasm_game_of_life_bg.wasm": function() {
 /******/ 			return {
 /******/ 				"./wasm_game_of_life_bg.js": {
-/******/ 					"__wbindgen_string_new": function(p0i32,p1i32) {
-/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbindgen_string_new"](p0i32,p1i32);
-/******/ 					},
 /******/ 					"__wbg_alert_fbbeabc2309f67cb": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_alert_fbbeabc2309f67cb"](p0i32,p1i32);
-/******/ 					},
-/******/ 					"__wbindgen_object_drop_ref": function(p0i32) {
-/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbindgen_object_drop_ref"](p0i32);
 /******/ 					},
 /******/ 					"__wbg_new_693216e109162396": function() {
 /******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_new_693216e109162396"]();
@@ -73,11 +67,89 @@
 /******/ 					"__wbg_error_09919627ac0992f5": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_error_09919627ac0992f5"](p0i32,p1i32);
 /******/ 					},
-/******/ 					"__wbg_log_17733ab6fa45831d": function(p0i32) {
-/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_log_17733ab6fa45831d"](p0i32);
+/******/ 					"__wbindgen_object_drop_ref": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbindgen_object_drop_ref"](p0i32);
+/******/ 					},
+/******/ 					"__wbg_process_e56fd54cf6319b6c": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_process_e56fd54cf6319b6c"](p0i32);
+/******/ 					},
+/******/ 					"__wbindgen_is_object": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbindgen_is_object"](p0i32);
+/******/ 					},
+/******/ 					"__wbg_versions_77e21455908dad33": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_versions_77e21455908dad33"](p0i32);
+/******/ 					},
+/******/ 					"__wbg_node_0dd25d832e4785d5": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_node_0dd25d832e4785d5"](p0i32);
+/******/ 					},
+/******/ 					"__wbindgen_is_string": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbindgen_is_string"](p0i32);
+/******/ 					},
+/******/ 					"__wbg_require_0db1598d9ccecb30": function(p0i32,p1i32,p2i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_require_0db1598d9ccecb30"](p0i32,p1i32,p2i32);
+/******/ 					},
+/******/ 					"__wbg_crypto_b95d7173266618a9": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_crypto_b95d7173266618a9"](p0i32);
+/******/ 					},
+/******/ 					"__wbg_msCrypto_5a86d77a66230f81": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_msCrypto_5a86d77a66230f81"](p0i32);
+/******/ 					},
+/******/ 					"__wbg_getRandomValues_b14734aa289bc356": function(p0i32,p1i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_getRandomValues_b14734aa289bc356"](p0i32,p1i32);
+/******/ 					},
+/******/ 					"__wbg_static_accessor_NODE_MODULE_26b231378c1be7dd": function() {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_static_accessor_NODE_MODULE_26b231378c1be7dd"]();
+/******/ 					},
+/******/ 					"__wbg_randomFillSync_91e2b39becca6147": function(p0i32,p1i32,p2i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_randomFillSync_91e2b39becca6147"](p0i32,p1i32,p2i32);
+/******/ 					},
+/******/ 					"__wbg_newnoargs_971e9a5abe185139": function(p0i32,p1i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_newnoargs_971e9a5abe185139"](p0i32,p1i32);
+/******/ 					},
+/******/ 					"__wbg_call_33d7bcddbbfa394a": function(p0i32,p1i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_call_33d7bcddbbfa394a"](p0i32,p1i32);
+/******/ 					},
+/******/ 					"__wbg_self_fd00a1ef86d1b2ed": function() {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_self_fd00a1ef86d1b2ed"]();
+/******/ 					},
+/******/ 					"__wbg_window_6f6e346d8bbd61d7": function() {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_window_6f6e346d8bbd61d7"]();
+/******/ 					},
+/******/ 					"__wbg_globalThis_3348936ac49df00a": function() {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_globalThis_3348936ac49df00a"]();
+/******/ 					},
+/******/ 					"__wbg_global_67175caf56f55ca9": function() {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_global_67175caf56f55ca9"]();
+/******/ 					},
+/******/ 					"__wbindgen_is_undefined": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbindgen_is_undefined"](p0i32);
+/******/ 					},
+/******/ 					"__wbg_buffer_34f5ec9f8a838ba0": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_buffer_34f5ec9f8a838ba0"](p0i32);
+/******/ 					},
+/******/ 					"__wbg_new_cda198d9dbc6d7ea": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_new_cda198d9dbc6d7ea"](p0i32);
+/******/ 					},
+/******/ 					"__wbg_set_1a930cfcda1a8067": function(p0i32,p1i32,p2i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_set_1a930cfcda1a8067"](p0i32,p1i32,p2i32);
+/******/ 					},
+/******/ 					"__wbg_length_51f19f73d6d9eff3": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_length_51f19f73d6d9eff3"](p0i32);
+/******/ 					},
+/******/ 					"__wbg_newwithlength_66e5530e7079ea1b": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_newwithlength_66e5530e7079ea1b"](p0i32);
+/******/ 					},
+/******/ 					"__wbg_subarray_270ff8dd5582c1ac": function(p0i32,p1i32,p2i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbg_subarray_270ff8dd5582c1ac"](p0i32,p1i32,p2i32);
+/******/ 					},
+/******/ 					"__wbindgen_object_clone_ref": function(p0i32) {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbindgen_object_clone_ref"](p0i32);
 /******/ 					},
 /******/ 					"__wbindgen_throw": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbindgen_throw"](p0i32,p1i32);
+/******/ 					},
+/******/ 					"__wbindgen_memory": function() {
+/******/ 						return installedModules["../pkg/wasm_game_of_life_bg.js"].exports["__wbindgen_memory"]();
 /******/ 					}
 /******/ 				}
 /******/ 			};
@@ -180,7 +252,7 @@
 /******/ 				promises.push(installedWasmModuleData);
 /******/ 			else {
 /******/ 				var importObject = wasmImportObjects[wasmModuleId]();
-/******/ 				var req = fetch(__webpack_require__.p + "" + {"../pkg/wasm_game_of_life_bg.wasm":"eac4fe612c02834550e0"}[wasmModuleId] + ".module.wasm");
+/******/ 				var req = fetch(__webpack_require__.p + "" + {"../pkg/wasm_game_of_life_bg.wasm":"9d4adfa8baa1d5620028"}[wasmModuleId] + ".module.wasm");
 /******/ 				var promise;
 /******/ 				if(importObject instanceof Promise && typeof WebAssembly.compileStreaming === 'function') {
 /******/ 					promise = Promise.all([WebAssembly.compileStreaming(req), importObject]).then(function(items) {
