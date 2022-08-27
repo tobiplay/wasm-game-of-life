@@ -20,22 +20,22 @@ let universe = Universe.new(UniverseOption.Dead);
 const universeSelector = document.getElementById("select-universe");
 
 // And listen to any changes on it:
-universeSelector.onchange = () => {
-    let selectedUniverseOption = universeSelector.value;
+universeSelector.addEventListener("change", (e) => {
+  let selectedUniverseOption = universeSelector.value;
 
-    let universeOption = null;
+  let universeOption = null;
 
-    if (selectedUniverseOption === "Random") {
-        universeOption = UniverseOption.Random;
-    } else if (selectedUniverseOption === "TwoSeven") {
-        universeOption = UniverseOption.TwoSeven;
-    } else {
-        universeOption = UniverseOption.Dead;
-    }
+  if (selectedUniverseOption === "Random") {
+    universeOption = UniverseOption.Random;
+  } else if (selectedUniverseOption === "TwoSeven") {
+    universeOption = UniverseOption.TwoSeven;
+  } else {
+    universeOption = UniverseOption.Dead;
+  }
 
-    universe = Universe.new(universeOption);
-    drawCells();
-};
+  universe = Universe.new(universeOption);
+  drawCells();
+});
 
 // Now that an universe exists, we can grab the height and width:
 let width = universe.width();
@@ -54,53 +54,53 @@ const ctx = canvas.getContext("2d");
 
 // Compute the click action on the canvas element.
 canvas.addEventListener("click", (e) => {
-    // We listen to the click event within the rectangle that
-    // makes up the canvas element:F
-    const boundingRect = canvas.getBoundingClientRect();
+  // We listen to the click event within the rectangle that
+  // makes up the canvas element:F
+  const boundingRect = canvas.getBoundingClientRect();
 
-    // We calculate the relative scale in X and Y direction:
-    const scaleX = canvas.width / boundingRect.width;
-    const scaleY = canvas.height / boundingRect.height;
+  // We calculate the relative scale in X and Y direction:
+  const scaleX = canvas.width / boundingRect.width;
+  const scaleY = canvas.height / boundingRect.height;
 
-    // We calculate the position of the click within the rectangle:
-    const canvasLeft = (e.clientX - boundingRect.left) * scaleX;
-    const canvasTop = (e.clientY - boundingRect.top) * scaleY;
+  // We calculate the position of the click within the rectangle:
+  const canvasLeft = (e.clientX - boundingRect.left) * scaleX;
+  const canvasTop = (e.clientY - boundingRect.top) * scaleY;
 
-    // Transform coursor (click) position into a row and col.
-    // We divide the position within the canvas by the size of each cell.
-    // This yields the amount of cells. We have to add 1 to each cell size,
-    // due to the border. We then take the floor of that, because we want to
-    // stay within a certain cell. We take the minimum of that result
-    // and 1 px less than the height of the `Universe` in cases where we might
-    // land exactly on the border.
-    const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
-    const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
+  // Transform coursor (click) position into a row and col.
+  // We divide the position within the canvas by the size of each cell.
+  // This yields the amount of cells. We have to add 1 to each cell size,
+  // due to the border. We then take the floor of that, because we want to
+  // stay within a certain cell. We take the minimum of that result
+  // and 1 px less than the height of the `Universe` in cases where we might
+  // land exactly on the border.
+  const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
+  const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
 
-    // Toggle the cell state via the WASM function:
-    universe.toggle_cell(row, col);
+  // Toggle the cell state via the WASM function:
+  universe.toggle_cell(row, col);
 
-    // Redraw the cells after the click:
-    drawCells();
+  // Redraw the cells after the click:
+  drawCells();
 });
 
 // Grab the button.
 const playPauseButton = document.getElementById("play-pause");
 
 const play = () => {
-    playPauseButton.textContent = "Pause";
-    // Restart the animation by requesting the renderLoop:
-    renderLoop();
+  playPauseButton.textContent = "Pause";
+  // Restart the animation by requesting the renderLoop:
+  renderLoop();
 };
 
 const pause = () => {
-    playPauseButton.textContent = "Play";
-    // Cancel the animation via the animationId:
-    cancelAnimationFrame(animationId);
-    animationId = null;
+  playPauseButton.textContent = "Play";
+  // Cancel the animation via the animationId:
+  cancelAnimationFrame(animationId);
+  animationId = null;
 };
 
 playPauseButton.addEventListener("click", (e) => {
-    isPaused() ? play() : pause();
+  isPaused() ? play() : pause();
 });
 
 // We store an animationId, which will be used
@@ -110,27 +110,45 @@ let animationId = null;
 // We can tell if the renderLoop is paused
 // by checking the animationId.
 const isPaused = () => {
-    return animationId === null;
+  return animationId === null;
 };
+
+// Because we want the user to be able to decide how
+// many ticks make up 1 frame on the screen, we have
+// to keep track of his decision, which is input via
+// the slider on the front-end. So we first grab
+// the slider from the DOM:
+const slider = document.getElementById("ticks-per-frame");
+// We then store the selected value from the slider in a variable:
+let ticksPerFrame = slider.value;
+
+slider.addEventListener("change", (e) => {
+  ticksPerFrame = slider.value;
+});
 
 // The JavaScript portion of our program runs in a
 // requestAnimationFrame loop. On each iteration,
 // it draws the current universe to the <canvas>,
 // and then calls Universe::tick to advance one tick.
 const renderLoop = () => {
-    // Place a debugger checkpoint:
-    debugger;
-    // Tick once, after we had already called the
-    // first tick before:
-    universe.tick();
-    // Draw both the grid and the cells:
-    // drawGrid();
+  // Place a debugger checkpoint:
+  // debugger;
+  // Tick once, after we had already called the
+  // first tick before:
+  universe.tick();
+  // If we wante to redraw the grid, we would
+  // have to to uncomment this line:
+  // drawGrid();
+
+  // We only want to draw the cells whenever the
+  // animationId is divisible by ticksPerFrame.
+  if (animationId % ticksPerFrame === 0) {
     drawCells();
+  }
 
-    // console.log(universe.render());
-
-    // Invoke the loop and store the animationId.
-    animationId = requestAnimationFrame(renderLoop);
+  // console.log(universe.render());
+  // Invoke the loop and store the animationId.
+  animationId = requestAnimationFrame(renderLoop);
 };
 
 // To draw the grid between cells, we draw a set of equally-spaced
@@ -138,28 +156,28 @@ const renderLoop = () => {
 // These lines criss-cross to form the grid.
 /** Draws the grid on the `<canvas>` element. */
 const drawGrid = () => {
-    // Inside the <canvas> (grabbed via context):
-    ctx.beginPath();
-    ctx.strokeStyle = GRID_COLOR;
+  // Inside the <canvas> (grabbed via context):
+  ctx.beginPath();
+  ctx.strokeStyle = GRID_COLOR;
 
-    // Vertical lines.
-    for (let i = 0; i <= width; i++) {
-        // Move the pointer to the top position in the grid.
-        ctx.moveTo(i * (CELL_SIZE + 1) + 1, 0);
-        // Draw a line downwards from that position until
-        // we reach the very bottom of the canvas.
-        ctx.lineTo(i * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * height + 1);
-    }
+  // Vertical lines.
+  for (let i = 0; i <= width; i++) {
+    // Move the pointer to the top position in the grid.
+    ctx.moveTo(i * (CELL_SIZE + 1) + 1, 0);
+    // Draw a line downwards from that position until
+    // we reach the very bottom of the canvas.
+    ctx.lineTo(i * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * height + 1);
+  }
 
-    // Horizontal lines. This works basically the same as the vertical
-    // lines.
-    for (let j = 0; j <= height; j++) {
-        ctx.moveTo(0, j * (CELL_SIZE + 1) + 1);
-        ctx.lineTo((CELL_SIZE + 1) * width + 1, j * (CELL_SIZE + 1) + 1);
-    }
+  // Horizontal lines. This works basically the same as the vertical
+  // lines.
+  for (let j = 0; j <= height; j++) {
+    ctx.moveTo(0, j * (CELL_SIZE + 1) + 1);
+    ctx.lineTo((CELL_SIZE + 1) * width + 1, j * (CELL_SIZE + 1) + 1);
+  }
 
-    // The stroke() methode actually draws the lines then.
-    ctx.stroke();
+  // The stroke() methode actually draws the lines then.
+  ctx.stroke();
 };
 
 /**
@@ -169,43 +187,43 @@ const drawGrid = () => {
  * @return {String}         The index of a `Cell` at `row` and `column`.
  */
 const getIndex = (row, column) => {
-    return row * width + column;
+  return row * width + column;
 };
 
 /** Draws the cells composed of `Cell` instances on the `<canvas>`. */
 const drawCells = () => {
-    // Obtain a raw pointer to the memory, where the instances of `Cell`
-    // are stored at.
-    const cellsPtr = universe.cells();
-    // Dump the cells into an array of unsigned 8-bit integers.
-    // The array is supposed to be width * height in size.
-    const cells = new Uint8Array(memory.buffer, cellsPtr, width * height);
+  // Obtain a raw pointer to the memory, where the instances of `Cell`
+  // are stored at.
+  const cellsPtr = universe.cells();
+  // Dump the cells into an array of unsigned 8-bit integers.
+  // The array is supposed to be width * height in size.
+  const cells = new Uint8Array(memory.buffer, cellsPtr, width * height);
 
-    ctx.beginPath();
+  ctx.beginPath();
 
-    for (let row = 0; row < height; row++) {
-        for (let col = 0; col < width; col++) {
-            // For each cell we obrain its index.
-            const idx = getIndex(row, col);
+  for (let row = 0; row < height; row++) {
+    for (let col = 0; col < width; col++) {
+      // For each cell we obrain its index.
+      const idx = getIndex(row, col);
 
-            // Depending on the state of the cell we render
-            // its associated rectangle in either one of those
-            // two defined colors.
-            ctx.fillStyle = cells[idx] === Cell.Dead ? DEAD_COLOR : ALIVE_COLOR;
+      // Depending on the state of the cell we render
+      // its associated rectangle in either one of those
+      // two defined colors.
+      ctx.fillStyle = cells[idx] === Cell.Dead ? DEAD_COLOR : ALIVE_COLOR;
 
-            // We create a rectangle and shift 1 to the right for the
-            // border on the left, and another one for each previous
-            // cell due to its border too.
-            ctx.fillRect(
-                col * (CELL_SIZE + 1) + 1,
-                row * (CELL_SIZE + 1) + 1,
-                CELL_SIZE,
-                CELL_SIZE
-            );
-        }
+      // We create a rectangle and shift 1 to the right for the
+      // border on the left, and another one for each previous
+      // cell due to its border too.
+      ctx.fillRect(
+        col * (CELL_SIZE + 1) + 1,
+        row * (CELL_SIZE + 1) + 1,
+        CELL_SIZE,
+        CELL_SIZE
+      );
     }
+  }
 
-    ctx.stroke();
+  ctx.stroke();
 };
 
 // To start the rendering process, all we have to do is
