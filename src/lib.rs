@@ -327,9 +327,37 @@ impl Universe {
         self.cells[idx].toggle();
     }
 
+    /// Inserts a glider pattern into the universe.
+    pub fn toggle_glider(&mut self, row: u32, column: u32) {
+        // Glider pattern, where x marks the clicked cell
+        // and the other cells to be toggled are marked with a o:
+        //     o
+        // o x o
+        //   o o
+        // Grab the width and height of the universe as a tuple:
+        let (width, height) = (self.width, self.height);
+
+        // If the clicked cell is on the very right, left, top or bottom of
+        // the universe, we can't insert the glider pattern, so return:
+        if width - 1 == column || column == 0 || height - 1 == row || row == 0 {
+            return;
+        };
+
+        let left = self.get_index(row, column - 1);
+        let right = self.get_index(row, column + 1);
+        let bottom = self.get_index(row + 1, column);
+        let bottom_right = self.get_index(row + 1, column + 1);
+        let top_right = self.get_index(row - 1, column + 1);
+
+        let cells_to_toggle = [left, right, bottom, bottom_right, top_right];
+
+        for cell in cells_to_toggle.iter() {
+            self.cells[*cell].toggle();
+        }
+    }
+
     // A couple more getter functions for our Universe,
     // which will be exposed to the JavaScript API.
-
     /// Returns the `width` of the `Universe`.
     pub fn width(&self) -> u32 {
         self.width
@@ -452,5 +480,33 @@ mod tests {
 
         // Because we DON'T advance one tick in time, the cell should now be dead.
         assert_eq!(universe.cells[0], Cell::Dead);
+    }
+
+    #[test]
+    fn can_toggle_glider() {
+        let mut universe = Universe::new(UniverseOption::Dead);
+        let center_of_universe = (universe.height / 2, universe.width / 2);
+
+        // Toggle a glider in the center of the universe:
+        universe.toggle_glider(center_of_universe.0, center_of_universe.1);
+
+        // The glider should be in the center of the universe.
+        let left = universe.get_index(center_of_universe.0, center_of_universe.1 - 1);
+        let right = universe.get_index(center_of_universe.0, center_of_universe.1 + 1);
+        let bottom = universe.get_index(center_of_universe.0 + 1, center_of_universe.1);
+        let bottom_right = universe.get_index(center_of_universe.0 + 1, center_of_universe.1 + 1);
+        let top_right = universe.get_index(center_of_universe.0 - 1, center_of_universe.1 + 1);
+
+        assert_eq!(universe.cells[left], Cell::Alive);
+        assert_eq!(universe.cells[right], Cell::Alive);
+        assert_eq!(universe.cells[bottom], Cell::Alive);
+        assert_eq!(universe.cells[bottom_right], Cell::Alive);
+        assert_eq!(universe.cells[top_right], Cell::Alive);
+
+        // But the center cell should be dead:
+        assert_eq!(
+            universe.cells[universe.get_index(center_of_universe.0, center_of_universe.1)],
+            Cell::Dead
+        );
     }
 }

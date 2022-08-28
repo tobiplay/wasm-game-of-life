@@ -76,8 +76,14 @@ canvas.addEventListener("click", (e) => {
   const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
   const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
 
-  // Toggle the cell state via the WASM function:
-  universe.toggle_cell(row, col);
+  if (e.shiftKey) {
+    universe.toggle_glider(row, col);
+  } else if (e.altKey) {
+  } else {
+    // Toggle the cell state via the WASM function when no
+    // modifier keys are pressed.
+    universe.toggle_cell(row, col);
+  }
 
   // Redraw the cells after the click:
   drawCells();
