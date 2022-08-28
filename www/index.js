@@ -83,6 +83,29 @@ canvas.addEventListener("click", (e) => {
   drawCells();
 });
 
+// Grab the reset button.
+const resetButton = document.getElementById("reset");
+// Set the text of the button to "Reset":
+resetButton.textContent = "Reset";
+// Listen to the click event on the reset button.
+resetButton.addEventListener("click", (e) => {
+  // Cancel the animation:
+  cancelAnimationFrame(animationId);
+  // Reset the animationId:
+  animationId = null;
+
+  // Set the value of the universeSelector to "Empty":
+  universeSelector.value = "Empty";
+  // Reset the play button:
+  playPauseButton.textContent = "Play";
+
+  // Reset the universe:
+  universe = Universe.new(UniverseOption.Dead);
+
+  // Redraw the cells:
+  drawCells();
+});
+
 // Grab the button.
 const playPauseButton = document.getElementById("play-pause");
 
