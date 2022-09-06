@@ -1,4 +1,6 @@
 import * as wasm from "wasm-game-of-life";
+// Import the fps module.
+import { fps } from "./utils/fps.js";
 // Specifically import the Universe struct:
 import { Universe, Cell, UniverseOption } from "wasm-game-of-life";
 // Import the WebAssembly memory at the top of the file.
@@ -160,6 +162,7 @@ slider.addEventListener("change", (e) => {
 // it draws the current universe to the <canvas>,
 // and then calls Universe::tick to advance one tick.
 const renderLoop = () => {
+  fps.render();
   // Place a debugger checkpoint:
   // debugger;
   // Tick once, after we had already called the
@@ -263,6 +266,7 @@ const drawCells = () => {
 // renderLoop portion:
 drawCells();
 drawGrid();
+fps.render();
 pause();
 
 // var button = document.createElement("button");
