@@ -167,6 +167,10 @@ impl Universe {
     /// array (`Vec<Cell>`) and overwriting the
     /// previous state.
     pub fn tick(&mut self) {
+        // Create a new Timer that tracks each tick of the universe.
+        // Due to the nature of the tick method, a new timer is created
+        // for each tick.
+        let _timer = utils::Timer::new("Universe::tick");
         // Clone the current cells into a new vector:
         let mut next = self.cells.clone();
 
@@ -223,7 +227,7 @@ impl Universe {
     /// Creates and returns an instance of `Universe`.
     ///
     /// This specific instance has a `width` and `height`
-    /// of 64. Takes an `UniverseOption` as an option, which
+    /// of 128. Takes an `UniverseOption` as an option, which
     /// allows for different starting universes. This state
     /// can be `TwoSeven`, where the index of each living starting
     /// cell was either divisible by 2 or 7, `Dead` or `Random`.
@@ -234,8 +238,8 @@ impl Universe {
         utils::set_panic_hook();
 
         let universe_option = universe_option;
-        let width = 64;
-        let height = 64;
+        let width = 128;
+        let height = 128;
 
         /// Returns a vector of random `Cell` instances.
         ///
@@ -415,11 +419,12 @@ mod tests {
     }
 
     #[test]
-    /// Calls every getter function that is going to be exposed to the JavaScript API.
+    /// Calls every getter function that is going to be exposed to the
+    /// JavaScript API.
     ///
-    /// The JavaScript API and WASM are glued together via the `wasm_bindgen` glue,
-    /// which relies on public getter functions to work with `Universe` and `Cell`
-    /// structs outside of the Rust source.
+    /// The JavaScript API and WASM are glued together via the `wasm_bindgen`
+    /// glue, which relies on public getter functions to work with `Universe`
+    /// and `Cell` structs outside of the Rust source.
     fn can_call_universe_getters() {
         // We test the getter functions on our basic TwoSeven universe.
         let universe = Universe::new(UniverseOption::TwoSeven);
@@ -450,36 +455,10 @@ mod tests {
     }
 
     #[test]
-    /// Tests if the `tick` method does advance the board one tick in time.
-    ///
-    /// We use the `TwoSeven` option here, because it's easier to debug
-    /// when the board is always the same.
-    fn tick_does_advance() {
-        let mut universe = Universe::new(UniverseOption::TwoSeven);
-        // The cell at row 0, column 0 starts off as a living cell,
-        // because its index is 0 and therefore divisible by 2.
-        // The first cell should therefore be alive at the start:
-        assert!(universe.cells[0] == Cell::Alive);
-
-        // Advance one tick in time:
-        universe.tick();
-
-        // The cell should now be dead.
-        assert!(universe.cells[0] == Cell::Dead)
-    }
-
-    #[test]
     fn can_toggle_cell() {
-        let mut universe = Universe::new(UniverseOption::TwoSeven);
-        // The cell at row 0, column 0 starts off as a living cell,
-        // so this test should fail if the cell is not toggled to a dead.
-        assert_ne!(universe.cells[0], Cell::Dead);
-
-        // Now that we know that the cell is alive, we toggle it to dead:
-        universe.toggle_cell(0, 0);
-
-        // Because we DON'T advance one tick in time, the cell should now be dead.
-        assert_eq!(universe.cells[0], Cell::Dead);
+        let mut universe = Universe::new(UniverseOption::Dead);
+        universe.toggle_cell(1, 1);
+        assert_eq!(universe.cells[universe.get_index(1, 1)], Cell::Alive);
     }
 
     #[test]
