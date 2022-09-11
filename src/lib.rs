@@ -238,8 +238,8 @@ impl Universe {
         utils::set_panic_hook();
 
         let universe_option = universe_option;
-        let width = 128;
-        let height = 128;
+        let width = 512;
+        let height = 512;
 
         /// Returns a vector of random `Cell` instances.
         ///
