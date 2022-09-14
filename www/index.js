@@ -165,18 +165,19 @@ const renderLoop = () => {
   fps.render();
   // Place a debugger checkpoint:
   // debugger;
-  // Tick once, after we had already called the
-  // first tick before:
-  universe.tick();
+
+  // We'll tick the universe as many times as the user
+  // has selected via the slider:
+  for (let i = 0; i < ticksPerFrame; i++) {
+    universe.tick();
+  }
+
   // If we wante to redraw the grid, we would
   // have to to uncomment this line:
   // drawGrid();
 
-  // We only want to draw the cells whenever the
-  // animationId is divisible by ticksPerFrame.
-  if (animationId % ticksPerFrame === 0) {
-    drawCells();
-  }
+  // We only draw the cells every ticksPerFrame iterations.
+  drawCells();
 
   // console.log(universe.render());
   // Invoke the loop and store the animationId.
