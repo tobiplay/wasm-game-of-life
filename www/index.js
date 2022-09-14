@@ -233,19 +233,41 @@ const drawCells = () => {
 
   ctx.beginPath();
 
+  // Alive cells. Because the setter for the `fillStyle` property
+  // turns out to be so expensive, we only set it once for all
+  // alive cells.
+  ctx.fillStyle = ALIVE_COLOR;
   for (let row = 0; row < height; row++) {
     for (let col = 0; col < width; col++) {
       // For each cell we obrain its index.
       const idx = getIndex(row, col);
-
-      // Depending on the state of the cell we render
-      // its associated rectangle in either one of those
-      // two defined colors.
-      ctx.fillStyle = cells[idx] === Cell.Dead ? DEAD_COLOR : ALIVE_COLOR;
+      if (cells[idx] !== Cell.Alive) {
+        continue;
+      }
 
       // We create a rectangle and shift 1 to the right for the
       // border on the left, and another one for each previous
       // cell due to its border too.
+      ctx.fillRect(
+        col * (CELL_SIZE + 1) + 1,
+        row * (CELL_SIZE + 1) + 1,
+        CELL_SIZE,
+        CELL_SIZE
+      );
+    }
+  }
+
+  // Dead cells. We repeat the same for dead cells. By only setting
+  // the `fillStyle` property once, we can save a lot of time for
+  // the tick method.
+  ctx.fillStyle = DEAD_COLOR;
+  for (let row = 0; row < height; row++) {
+    for (let col = 0; col < width; col++) {
+      const idx = getIndex(row, col);
+      if (cells[idx] !== Cell.Dead) {
+        continue;
+      }
+
       ctx.fillRect(
         col * (CELL_SIZE + 1) + 1,
         row * (CELL_SIZE + 1) + 1,
