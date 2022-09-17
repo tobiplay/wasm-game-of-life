@@ -1,4 +1,4 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 // Import the Universe from lib.rs:
 use wasm_game_of_life::universe::{Universe, UniverseOption};
 
