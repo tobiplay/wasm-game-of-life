@@ -70,7 +70,7 @@ impl Universe {
     /// The cells of an `Universe` are hidden to the
     /// public API and have to be exposed with a separate
     /// function.
-    pub fn struct_cells(&self) -> &Vec<super::cell::Cell> {
+    pub fn get_cells(&self) -> &Vec<super::cell::Cell> {
         &self.cells
     }
 

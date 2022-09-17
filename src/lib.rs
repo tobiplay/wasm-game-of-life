@@ -47,7 +47,7 @@ mod tests {
         assert!(
             universe.height() > 0
                 && universe.width() > 0
-                && universe.struct_cells().len()
+                && universe.get_cells().len()
                     == universe.height() as usize * universe.width() as usize
         );
     }
@@ -65,7 +65,7 @@ mod tests {
         assert!(
             universe.height() == universe.height()
                 && universe.width() == universe.width()
-                && universe.struct_cells().as_ptr() == universe.cells()
+                && universe.get_cells().as_ptr() == universe.cells()
         );
     }
 
@@ -93,7 +93,7 @@ mod tests {
         let mut universe = universe::Universe::new(universe::UniverseOption::Dead);
         universe.toggle_cell(1, 1);
         assert_eq!(
-            universe.struct_cells()[universe.get_index(1, 1)],
+            universe.get_cells()[universe.get_index(1, 1)],
             cell::Cell::Alive
         );
     }
@@ -113,15 +113,15 @@ mod tests {
         let bottom_right = universe.get_index(center_of_universe.0 + 1, center_of_universe.1 + 1);
         let top_right = universe.get_index(center_of_universe.0 - 1, center_of_universe.1 + 1);
 
-        assert_eq!(universe.struct_cells()[left], cell::Cell::Alive);
-        assert_eq!(universe.struct_cells()[right], cell::Cell::Alive);
-        assert_eq!(universe.struct_cells()[bottom], cell::Cell::Alive);
-        assert_eq!(universe.struct_cells()[bottom_right], cell::Cell::Alive);
-        assert_eq!(universe.struct_cells()[top_right], cell::Cell::Alive);
+        assert_eq!(universe.get_cells()[left], cell::Cell::Alive);
+        assert_eq!(universe.get_cells()[right], cell::Cell::Alive);
+        assert_eq!(universe.get_cells()[bottom], cell::Cell::Alive);
+        assert_eq!(universe.get_cells()[bottom_right], cell::Cell::Alive);
+        assert_eq!(universe.get_cells()[top_right], cell::Cell::Alive);
 
         // But the center cell should be dead:
         assert_eq!(
-            universe.struct_cells()[universe.get_index(center_of_universe.0, center_of_universe.1)],
+            universe.get_cells()[universe.get_index(center_of_universe.0, center_of_universe.1)],
             cell::Cell::Dead
         );
     }
