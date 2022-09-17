@@ -1,6 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 // Import the Universe from lib.rs:
-use wasm_game_of_life::{Universe, UniverseOption};
+use wasm_game_of_life::universe::{Universe, UniverseOption};
 
 fn fibonacci(n: u64) -> u64 {
     match n {
