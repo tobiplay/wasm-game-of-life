@@ -120,9 +120,10 @@ impl Universe {
     ///
     /// # Algorithm explanation
     ///
-    /// First, we find the north, south, west and east cell to
-    /// our current cell that we've defined via `row` and `column`.
-    ///
+    /// First, we define the north, south, west and east direction relative
+    /// to our current cell that we've defined via `row` and `column`.
+    /// We then determine all adjacent cells and add up the number of
+    /// living cells, stored in `count`.
     pub fn live_neighbor_count(&self, row: u32, column: u32) -> u8 {
         let mut count = 0;
 
