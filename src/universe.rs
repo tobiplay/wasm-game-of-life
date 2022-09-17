@@ -65,6 +65,11 @@ impl Universe {
         (row * self.width + column) as usize
     }
 
+    /// Returns the cells of the `Universe` struct.
+    ///
+    /// The cells of an `Universe` are hidden to the
+    /// public API and have to be exposed with a separate
+    /// function.
     pub fn struct_cells(&self) -> &Vec<super::cell::Cell> {
         &self.cells
     }
