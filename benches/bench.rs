@@ -10,6 +10,10 @@ fn fibonacci(n: u64) -> u64 {
     }
 }
 
+/// Benchmarks the `tick` method of the `Universe` struct.
+///
+/// It creates a new universe with the `TwoSeven` option and
+/// runs the `tick` method 100 times on it.
 fn universe_ticks() {
     let mut universe = Universe::new(UniverseOption::TwoSeven);
 

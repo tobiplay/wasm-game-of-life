@@ -1,5 +1,7 @@
 mod utils;
 
+mod cell;
+
 use wasm_bindgen::prelude::*;
 // We need the std::fmt tools to print
 // game state to the terminal:
@@ -35,29 +37,6 @@ pub fn greet() {
 }
 
 #[wasm_bindgen]
-// This allows for each `Cell` to be represented as a single byte:
-#[repr(u8)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-/// A `Cell` is one single square in our `Universe`.
-///
-/// It either is `Dead` (0) or `Alive` (1).
-pub enum Cell {
-    Dead = 0,
-    Alive = 1,
-}
-
-impl Cell {
-    fn toggle(&mut self) {
-        // Dereference the borrowd cell and match
-        // against the two possible states:
-        *self = match *self {
-            Cell::Dead => Cell::Alive,
-            Cell::Alive => Cell::Dead,
-        };
-    }
-}
-
-#[wasm_bindgen]
 /// The `Universe` stores a collection of `Cell` instances.
 ///
 /// Each `Universe` is defined by a `width` and `height`,
@@ -67,7 +46,7 @@ impl Cell {
 pub struct Universe {
     width: u32,
     height: u32,
-    cells: Vec<Cell>,
+    cells: Vec<cell::Cell>,
     universe_option: UniverseOption,
 }
 
@@ -275,18 +254,15 @@ impl Universe {
 
                     // Determine the state of the cell in the next tick in time:
                     let next_cell = match (cell, live_neighbors) {
-                        // Rule 1: Any live cell with fewer than two live neighbours
-                        // dies, as if caused by underpopulation.
-                        (Cell::Alive, x) if x < 2 => Cell::Dead,
-                        // Rule 2: Any live cell with two or three live neighbours
-                        // lives on to the next generation.
-                        (Cell::Alive, 2) | (Cell::Alive, 3) => Cell::Alive,
+                        // Rule 1: Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
+                        (cell::Cell::Alive, x) if x < 2 => cell::Cell::Dead,
+                        // Rule 2: Any live cell with two or three live neighbours lives on to the next generation.
+                        (cell::Cell::Alive, 2) | (cell::Cell::Alive, 3) => cell::Cell::Alive,
                         // Rule 3: Any live cell with more than three live
                         // neighbours dies, as if by overpopulation.
-                        (Cell::Alive, x) if x > 3 => Cell::Dead,
-                        // Rule 4: Any dead cell with exactly three live neighbours
-                        // becomes a live cell, as if by reproduction.
-                        (Cell::Dead, 3) => Cell::Alive,
+                        (cell::Cell::Alive, x) if x > 3 => cell::Cell::Dead,
+                        // Rule 4: Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+                        (cell::Cell::Dead, 3) => cell::Cell::Alive,
                         // All other cells remain in the same state.
                         (otherwise, _) => otherwise,
                     };
@@ -327,7 +303,7 @@ impl Universe {
         ///
         /// The function takes in the `width` and `height` of
         /// the specifc universe as references.
-        fn random_cells(width: &u32, height: &u32) -> Vec<Cell> {
+        fn random_cells(width: &u32, height: &u32) -> Vec<cell::Cell> {
             // Init a RNG thread:
             let mut rng = rand::thread_rng();
 
@@ -337,9 +313,9 @@ impl Universe {
                 // or by 7, it's a living cell. Otherwise it's dead.
                 .map(|i| {
                     if rng.gen_range(0..=1) == 1 {
-                        Cell::Alive
+                        cell::Cell::Alive
                     } else {
-                        Cell::Dead
+                        cell::Cell::Dead
                     }
                 })
                 // Collect all cells into a vector:
@@ -354,16 +330,16 @@ impl Universe {
         /// the specifc universe as references. A living `Cell` is found
         /// at the start where the index of the cell is divisible by
         /// either 2 or 7.
-        fn two_seven_cells(width: &u32, height: &u32) -> Vec<Cell> {
+        fn two_seven_cells(width: &u32, height: &u32) -> Vec<cell::Cell> {
             let cells = (0..width * height)
                 // And for each cell we map the following function
                 // via a closure: if its index is divisable by 2
                 // or by 7, it's a living cell. Otherwise it's dead.
                 .map(|i| {
                     if i % 2 == 0 || i % 7 == 0 {
-                        Cell::Alive
+                        cell::Cell::Alive
                     } else {
-                        Cell::Dead
+                        cell::Cell::Dead
                     }
                 })
                 // Collect all cells into a vector:
@@ -376,15 +352,15 @@ impl Universe {
         ///
         /// The function takes in the `width` and `height` of
         /// the specifc universe as references.
-        fn dead_cells(width: &u32, height: &u32) -> Vec<Cell> {
-            let cells = (0..width * height).map(|i| Cell::Dead).collect();
+        fn dead_cells(width: &u32, height: &u32) -> Vec<cell::Cell> {
+            let cells = (0..width * height).map(|i| cell::Cell::Dead).collect();
             cells
         }
 
         // Create a range of cells with the correct
         // number of entries based on the width and height
         // of the Universe:
-        let cells: Vec<Cell> = match universe_option {
+        let cells: Vec<cell::Cell> = match universe_option {
             UniverseOption::Dead => dead_cells(&width, &height),
             UniverseOption::Random => random_cells(&width, &height),
             UniverseOption::TwoSeven => two_seven_cells(&width, &height),
@@ -456,7 +432,7 @@ impl Universe {
 
     /// Returns a raw pointer to the `cells` of
     /// the `Universe`.
-    pub fn cells(&self) -> *const Cell {
+    pub fn cells(&self) -> *const cell::Cell {
         self.cells.as_ptr()
     }
 }
@@ -473,7 +449,11 @@ impl fmt::Display for Universe {
             // For each cell in a line we then determine its state and write the
             // correct symbol:
             for &cell in line {
-                let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
+                let symbol = if cell == cell::Cell::Dead {
+                    '◻'
+                } else {
+                    '◼'
+                };
                 write!(f, "{}", symbol)?;
             }
             // Jump to the next line after the end of the previous one:
@@ -540,7 +520,7 @@ mod tests {
     fn can_toggle_cell() {
         let mut universe = Universe::new(UniverseOption::Dead);
         universe.toggle_cell(1, 1);
-        assert_eq!(universe.cells[universe.get_index(1, 1)], Cell::Alive);
+        assert_eq!(universe.cells[universe.get_index(1, 1)], cell::Cell::Alive);
     }
 
     #[test]
@@ -558,16 +538,16 @@ mod tests {
         let bottom_right = universe.get_index(center_of_universe.0 + 1, center_of_universe.1 + 1);
         let top_right = universe.get_index(center_of_universe.0 - 1, center_of_universe.1 + 1);
 
-        assert_eq!(universe.cells[left], Cell::Alive);
-        assert_eq!(universe.cells[right], Cell::Alive);
-        assert_eq!(universe.cells[bottom], Cell::Alive);
-        assert_eq!(universe.cells[bottom_right], Cell::Alive);
-        assert_eq!(universe.cells[top_right], Cell::Alive);
+        assert_eq!(universe.cells[left], cell::Cell::Alive);
+        assert_eq!(universe.cells[right], cell::Cell::Alive);
+        assert_eq!(universe.cells[bottom], cell::Cell::Alive);
+        assert_eq!(universe.cells[bottom_right], cell::Cell::Alive);
+        assert_eq!(universe.cells[top_right], cell::Cell::Alive);
 
         // But the center cell should be dead:
         assert_eq!(
             universe.cells[universe.get_index(center_of_universe.0, center_of_universe.1)],
-            Cell::Dead
+            cell::Cell::Dead
         );
     }
 }
