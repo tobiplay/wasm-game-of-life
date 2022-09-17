@@ -248,13 +248,13 @@ impl Universe {
         // to execute the tick method is printed to the console. The timer
         // is dropped at the end of the tick method, when it goes out of
         // scope.
-        let _timer = utils::Timer::new("Universe::tick");
+        // let _timer = utils::Timer::new("Universe::tick");
         // Clone the current cells into a new vector:
         let mut next = self.cells.clone();
-        let _timer = utils::Timer::new("allocate new cells");
+        // let _timer = utils::Timer::new("allocate new cells");
 
         {
-            let _timer = utils::Timer::new("new generation");
+            // let _timer = utils::Timer::new("new generation");
             for row in 0..self.height {
                 for col in 0..self.width {
                     // Get the index of the current cell:
@@ -302,7 +302,7 @@ impl Universe {
         }
         // Overwrite the current array of cells with
         // those at the current time plus one tick:
-        let _timer = utils::Timer::new("free old cells");
+        // let _timer = utils::Timer::new("free old cells");
         self.cells = next;
     }
 

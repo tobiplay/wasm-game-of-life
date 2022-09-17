@@ -1,13 +1,27 @@
-// #![feature(test)]
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+// Import the Universe from lib.rs:
+use wasm_game_of_life::{Universe, UniverseOption};
 
-// extern crate test;
-// extern crate wasm_game_of_life;
+fn fibonacci(n: u64) -> u64 {
+    match n {
+        0 => 1,
+        1 => 1,
+        n => fibonacci(n - 1) + fibonacci(n - 2),
+    }
+}
 
-// #[bench]
-// fn universe_ticks(b: &mut test::Bencher) {
-//     let mut universe = wasm_game_of_life::Universe::new(wasm_game_of_life::UniverseOption::Random);
+fn universe_ticks() {
+    let mut universe = Universe::new(UniverseOption::TwoSeven);
 
-//     b.iter(|| {
-//         universe.tick();
-//     });
-// }
+    // Tick the universe 100 times:
+    for _ in 0..100 {
+        universe.tick();
+    }
+}
+
+fn criterion_benchmark(c: &mut Criterion) {
+    c.bench_function("tick 100", |b| b.iter(|| universe_ticks()));
+}
+
+criterion_group!(benches, criterion_benchmark);
+criterion_main!(benches);
