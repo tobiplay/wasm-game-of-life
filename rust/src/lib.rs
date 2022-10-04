@@ -43,7 +43,7 @@ mod tests {
     #[test]
     /// Asserts that every property of the `Universe` struct was assigned.
     fn can_create_universe() {
-        let universe = universe::Universe::new(universe::UniverseOption::TwoSeven);
+        let universe = universe::Universe::new(universe::UniverseOption::TwoSeven, 64, 64);
         assert!(
             universe.height() > 0
                 && universe.width() > 0
@@ -61,7 +61,7 @@ mod tests {
     /// and `Cell` structs outside of the Rust source.
     fn can_call_universe_getters() {
         // We test the getter functions on our basic TwoSeven universe.
-        let universe = universe::Universe::new(universe::UniverseOption::TwoSeven);
+        let universe = universe::Universe::new(universe::UniverseOption::TwoSeven, 64, 64);
         assert!(
             universe.height() == universe.height()
                 && universe.width() == universe.width()
@@ -75,7 +75,7 @@ mod tests {
         // To test the live_neighbor_count function we rely on
         // the Dead option for our universe. Here, no single cell
         // should be alive.
-        let universe = universe::Universe::new(universe::UniverseOption::Dead);
+        let universe = universe::Universe::new(universe::UniverseOption::Dead, 64, 64);
         let count = universe.live_neighbor_count(1, 1);
         assert_eq!(count, 0);
     }
@@ -83,14 +83,14 @@ mod tests {
     #[test]
     /// Checks the the pattern created by the `TwoSeven` `UniverseOption`.
     fn two_seven_cells() {
-        let universe = universe::Universe::new(universe::UniverseOption::TwoSeven);
+        let universe = universe::Universe::new(universe::UniverseOption::TwoSeven, 64, 64);
         let count = universe.live_neighbor_count(1, 1);
         assert_eq!(count, 6);
     }
 
     #[test]
     fn can_toggle_cell() {
-        let mut universe = universe::Universe::new(universe::UniverseOption::Dead);
+        let mut universe = universe::Universe::new(universe::UniverseOption::Dead, 64, 64);
         universe.toggle_cell(1, 1);
         assert_eq!(
             universe.get_cells()[universe.get_index(1, 1)],
@@ -100,7 +100,7 @@ mod tests {
 
     #[test]
     fn can_toggle_glider() {
-        let mut universe = universe::Universe::new(universe::UniverseOption::Dead);
+        let mut universe = universe::Universe::new(universe::UniverseOption::Dead, 64, 64);
         let center_of_universe = (universe.height() / 2, universe.width() / 2);
 
         // Toggle a glider in the center of the universe:

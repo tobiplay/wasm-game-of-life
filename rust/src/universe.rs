@@ -270,15 +270,13 @@ impl Universe {
     /// allows for different starting universes. This state
     /// can be `TwoSeven`, where the index of each living starting
     /// cell was either divisible by 2 or 7, `Dead` or `Random`.
-    pub fn new(universe_option: UniverseOption) -> Universe {
+    pub fn new(universe_option: UniverseOption, width: u32, height: u32) -> Universe {
         // Enable logging for when our code panics.
         // This is achieved by invoking the set_panic_hook()
         // once somewhere in our code.
         super::utils::set_panic_hook();
 
         let universe_option = universe_option;
-        let width = 256;
-        let height = 256;
 
         /// Returns a vector of random `Cell` instances.
         ///
