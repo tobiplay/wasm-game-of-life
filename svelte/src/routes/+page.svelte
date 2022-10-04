@@ -2,7 +2,9 @@
   import { onMount } from 'svelte';
   import init, { greet } from 'wasm-game-of-life';
   import { Universe, Cell, UniverseOption } from 'wasm-game-of-life';
-  import Fps from '../components/Fps.svelte';
+  import Fps from '../components/fpsCounter.svelte';
+
+  let fpsComponent: any;
 
   let canvas: any;
   let ticksPerFrame: number = 1;
@@ -33,9 +35,11 @@
     // another 1 px to the whole canvas (outer border).
     canvas.height = (CELL_SIZE + 1) * height + 1;
     canvas.width = (CELL_SIZE + 1) * width + 1;
-    pause();
+
     drawGrid();
     drawCells();
+    // render();
+    pause();
   });
 
   // Define some constants to represent cells:
@@ -239,7 +243,8 @@
   // it draws the current universe to the <canvas>,
   // and then calls Universe::tick to advance one tick.
   const renderLoop = () => {
-    // fps.render();
+    fpsComponent.renderFpsComponent();
+
     // Place a debugger checkpoint:
     // debugger;
 
@@ -264,7 +269,9 @@
 
 <h1>Conway's Game of Life</h1>
 <p>
-  Visit the <a href="https://kit.svelte.dev">repository on GitHub</a> to read about the project.
+  Visit the <a style="margin-inline: .25em;" href="https://github.com/tobiplay/wasm-game-of-life"
+    >repository on GitHub</a
+  > to read about the project.
 </p>
 <form>
   <label for="select-universe">Choose a starting universe:</label>
@@ -286,7 +293,7 @@
   <button id="reset" on:click={handleResetClick}>Reset</button>
 </div>
 
-<Fps />
+<Fps bind:this={fpsComponent} />
 <canvas bind:this={canvas} on:click={handleCanvasClick} />
 <form>
   <label for="ticks-per-frame">Ticks per frame = {ticksPerFrame}</label>
@@ -308,4 +315,17 @@
 </form>
 
 <style>
+  p,
+  form,
+  button,
+  h1,
+  div {
+    justify-content: center;
+    display: flex;
+  }
+
+  canvas {
+    margin: auto;
+    display: flex;
+  }
 </style>
