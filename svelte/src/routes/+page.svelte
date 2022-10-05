@@ -308,7 +308,7 @@
     type="range"
     id="ticks-per-frame"
     min="16"
-    max="256"
+    max="224"
     step="16"
     on:change={handleGridSizeChange}
   />

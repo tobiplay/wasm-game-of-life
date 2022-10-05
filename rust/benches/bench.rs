@@ -15,7 +15,7 @@ fn fibonacci(n: u64) -> u64 {
 /// It creates a new universe with the `TwoSeven` option and
 /// runs the `tick` method 100 times on it.
 fn universe_ticks() {
-    let mut universe = Universe::new(UniverseOption::TwoSeven);
+    let mut universe = Universe::new(UniverseOption::TwoSeven, 64, 64);
 
     // Tick the universe 100 times:
     for _ in 0..100 {
