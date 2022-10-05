@@ -6,11 +6,11 @@ import { defineConfig, searchForWorkspaceRoot } from 'vite';
 
 export default defineConfig({
   plugins: [sveltekit(), wasm(), topLevelAwait()],
-  build: {
-    rollupOptions: {
-      external: ['wasm-game-of-life']
-    }
-  },
+  // build: {
+  //   rollupOptions: {
+  //     external: ['wasm-game-of-life']
+  //   }
+  // },
   server: {
     fs: {
       allow: [
