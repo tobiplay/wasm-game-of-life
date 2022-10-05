@@ -70,7 +70,7 @@ impl Universe {
     /// The cells of an `Universe` are hidden to the
     /// public API and have to be exposed with a separate
     /// function.
-    pub fn struct_cells(&self) -> &Vec<super::cell::Cell> {
+    pub fn get_cells(&self) -> &Vec<super::cell::Cell> {
         &self.cells
     }
 
@@ -120,9 +120,10 @@ impl Universe {
     ///
     /// # Algorithm explanation
     ///
-    /// First, we find the north, south, west and east cell to
-    /// our current cell that we've defined via `row` and `column`.
-    ///
+    /// First, we define the north, south, west and east direction relative
+    /// to our current cell that we've defined via `row` and `column`.
+    /// We then determine all adjacent cells and add up the number of
+    /// living cells, stored in `count`.
     pub fn live_neighbor_count(&self, row: u32, column: u32) -> u8 {
         let mut count = 0;
 
@@ -269,15 +270,13 @@ impl Universe {
     /// allows for different starting universes. This state
     /// can be `TwoSeven`, where the index of each living starting
     /// cell was either divisible by 2 or 7, `Dead` or `Random`.
-    pub fn new(universe_option: UniverseOption) -> Universe {
+    pub fn new(universe_option: UniverseOption, width: u32, height: u32) -> Universe {
         // Enable logging for when our code panics.
         // This is achieved by invoking the set_panic_hook()
         // once somewhere in our code.
         super::utils::set_panic_hook();
 
         let universe_option = universe_option;
-        let width = 256;
-        let height = 256;
 
         /// Returns a vector of random `Cell` instances.
         ///

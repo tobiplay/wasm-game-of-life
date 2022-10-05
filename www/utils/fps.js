@@ -8,8 +8,6 @@ const fps = new (class {
     this.lastFrameTimeStamp = performance.now();
   }
 
-  
-
   render() {
     // Convert the delta time since the last frame render into a measure
     // of frames per second.

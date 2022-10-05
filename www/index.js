@@ -1,4 +1,3 @@
-import * as wasm from "wasm-game-of-life";
 // Import the fps module.
 import { fps } from "./utils/fps.js";
 // Specifically import the Universe struct:
