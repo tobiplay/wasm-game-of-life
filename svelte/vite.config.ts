@@ -21,5 +21,13 @@ export default defineConfig({
         '../rust/pkg'
       ]
     }
+  },
+  optimizeDeps: {
+    include: ['wasm-game-of-life']
   }
+  // build: {
+  //   commonjsOptions: {
+  //     include: [/wasm-game-of-life/, /node_modules/]
+  //   }
+  // }
 });

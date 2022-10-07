@@ -2,8 +2,10 @@
   "name": "svelte",
   "version": "0.0.1",
   "private": true,
+  "main": "src/routes/+page.svelte",
   "scripts": {
     "dev": "vite dev",
+    "wasm:build": "cd ../rust && cargo check && cargo test && wasm-pack build --target web",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -30,7 +32,7 @@
     "vite": "^3.1.4",
     "vite-plugin-wasm": "^3.0.0",
     "vite-plugin-wasm-pack": "^0.1.12",
-    "wasm-game-of-life": "./pkg"
+    "wasm-game-of-life": "file:../rust/pkg"
   },
   "type": "module",
   "dependencies": {
