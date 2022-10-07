@@ -45,8 +45,19 @@
   // Define some constants to represent cells:
   const CELL_SIZE = 5; // Unit is px.
   const GRID_COLOR = '#CCCCCC';
+  // const GRID_COLOR = '#FFFFFF';
   const DEAD_COLOR = '#FFFFFF';
   const ALIVE_COLOR = '#00FF00';
+
+  // const DYING_1_COLOR = '#0a2d27';
+  // const DYING_2_COLOR = '#13594e';
+  // const DYING_3_COLOR = '#1d8676';
+  // const DYING_4_COLOR = '#26b29d';
+  // const DYING_5_COLOR = '#30dfc4';
+  // const DYING_6_COLOR = '#59e5d0';
+  // const DYING_7_COLOR = '#83ecdc';
+  // const DYING_8_COLOR = '#acf2e7';
+  // const DYING_9_COLOR = '#d6f9f3';
 
   let universeOptions = [
     { id: 0, text: 'Empty' },
