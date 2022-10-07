@@ -1,0 +1,4 @@
+# This file is left empty on purpose. It's just here to make sure that once the
+# built WASM package is copied to this directory, it's not ignored by git,
+# because the .gitignore file in the actual pkg dir features a wildcard for
+# all files in that directory.
