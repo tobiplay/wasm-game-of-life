@@ -1,6 +1,5 @@
 <script lang="ts">
   var someNumber = 0;
-
   var min = 0;
   var max = 0;
   var mean = 0;
@@ -59,18 +58,10 @@
   }
 </script>
 
-<p>
+<p class="font-mono flex justify-center text-xs">
   Frames per second: <br />
   Latest: {Math.round(fps)} <br />
   AVG of last 100 = {frames.length < 100 ? NaN : Math.round(mean)} <br />
   MIN of last 100 = {frames.length < 100 ? NaN : Math.round(min)} <br />
   MAX of last 100 = {frames.length < 100 ? NaN : Math.round(max)}
 </p>
-
-<style>
-  * {
-    justify-content: center;
-    display: flex;
-    font-family: monospace;
-  }
-</style>

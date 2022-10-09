@@ -1,8 +1,14 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import init, { greet } from 'wasm-game-of-life';
-  import { Universe, Cell, UniverseOption } from 'wasm-game-of-life';
-  import Fps from '../components/fpsCounter.svelte';
+  import { onMount } from "svelte";
+  import init, { greet } from "wasm-game-of-life";
+  import { Universe, Cell, UniverseOption } from "wasm-game-of-life";
+  import Fps from "../components/fpsCounter.svelte";
+  import Button from "../components/Button.svelte";
+  import Select from "../components/Select.svelte";
+  import Switch from "../components/Switch.svelte";
+  import Settings from "../components/Settings.svelte";
+
+  let hidden = false;
 
   let fpsComponent: any;
 
@@ -22,7 +28,7 @@
     wasm = await init();
     memory = wasm.memory;
 
-    ctx = canvas.getContext('2d');
+    ctx = canvas.getContext("2d");
 
     universe = Universe.new(UniverseOption.Dead, gridSize, gridSize);
 
@@ -44,10 +50,10 @@
 
   // Define some constants to represent cells:
   const CELL_SIZE = 5; // Unit is px.
-  const GRID_COLOR = '#CCCCCC';
+  const GRID_COLOR = "#CCCCCC";
   // const GRID_COLOR = '#FFFFFF';
-  const DEAD_COLOR = '#FFFFFF';
-  const ALIVE_COLOR = '#00FF00';
+  const DEAD_COLOR = "#FFFFFF";
+  const ALIVE_COLOR = "#00FF00";
 
   // const DYING_1_COLOR = '#0a2d27';
   // const DYING_2_COLOR = '#13594e';
@@ -60,9 +66,9 @@
   // const DYING_9_COLOR = '#d6f9f3';
 
   let universeOptions = [
-    { id: 0, text: 'Empty' },
-    { id: 1, text: 'Random' },
-    { id: 2, text: 'TwoSeven' }
+    { id: 0, text: "Empty" },
+    { id: 1, text: "Random" },
+    { id: 2, text: "TwoSeven" },
   ];
 
   let selected: any;
@@ -104,7 +110,12 @@
         // We create a rectangle and shift 1 to the right for the
         // border on the left, and another one for each previous
         // cell due to its border too.
-        ctx.fillRect(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE, CELL_SIZE);
+        ctx.fillRect(
+          col * (CELL_SIZE + 1) + 1,
+          row * (CELL_SIZE + 1) + 1,
+          CELL_SIZE,
+          CELL_SIZE
+        );
       }
     }
 
@@ -119,7 +130,12 @@
           continue;
         }
 
-        ctx.fillRect(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE, CELL_SIZE);
+        ctx.fillRect(
+          col * (CELL_SIZE + 1) + 1,
+          row * (CELL_SIZE + 1) + 1,
+          CELL_SIZE,
+          CELL_SIZE
+        );
       }
     }
 
@@ -202,16 +218,16 @@
     drawCells();
   }
 
-  let playPauseState = 'Pause';
+  let playPauseState = "Pause";
 
   const play = () => {
-    playPauseState = 'Pause';
+    playPauseState = "Pause";
     // Restart the animation by requesting the renderLoop:
     renderLoop();
   };
 
   const pause = () => {
-    playPauseState = 'Play';
+    playPauseState = "Resume";
     // Cancel the animation via the animationId:
     cancelAnimationFrame(animationId);
     animationId = null;
@@ -240,7 +256,7 @@
 
   const handleGridSizeChange = () => {
     handleResetClick();
-    ctx = canvas.getContext('2d');
+    ctx = canvas.getContext("2d");
     universe = Universe.new(UniverseOption.Dead, gridSize, gridSize);
     width = universe.width();
     height = universe.height();
@@ -278,65 +294,91 @@
   };
 </script>
 
-<h1>Conway's Game of Life</h1>
-<p>
-  Visit the <a style="margin-inline: .25em;" href="https://github.com/tobiplay/wasm-game-of-life"
-    >repository on GitHub</a
-  > to read about the project.
-</p>
-<form>
-  <label for="select-universe">Choose a starting universe:</label>
-  <select
-    name="select-universe"
-    id="select-universe"
-    bind:value={selected}
-    on:change={handleUniverseOptionChange}
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+
+<div class="my-4 mx-2">
+  <h1
+    class="text-3xl sm:text-4xl justify-center flex font-extrabold tracking-tight text-slate-900 "
   >
-    {#each universeOptions as option}
-      <option value={option}>
-        {option.text}
-      </option>
-    {/each}
-  </select>
-</form>
-<div>
-  <button id="play-pause" on:click={handlePlayPauseClick}>{playPauseState}</button>
-  <button id="reset" on:click={handleResetClick}>Reset</button>
+    Oxidized Game of Life.
+  </h1>
+  <p class="justify-center flex text-md tracking-tight text-slate-700">
+    Visit the <a
+      class="mx-1 text-indigo-600 hover:underline"
+      href="https://github.com/tobiplay/wasm-game-of-life"
+      >repository on GitHub</a
+    > to read about the project.
+  </p>
+
+  <div class="justify-center flex space-x-2 mt-8">
+    <Button
+      text={playPauseState}
+      onClick={handlePlayPauseClick}
+      id="play-pause"
+      type={"primary"}
+    />
+    <Button
+      text={"Reset"}
+      onClick={handleResetClick}
+      id="reset"
+      type={"secondary"}
+    />
+    <Button
+      text={"Settings"}
+      onClick={() => {
+        hidden = !hidden;
+      }}
+      id="hide"
+      type={"secondary"}
+    />
+  </div>
+
+  <div class="space-y-2 ml-auto mr-auto">
+    <Select
+      addClass=""
+      id={"universe-select"}
+      onChange={handleUniverseOptionChange}
+      bindValue={selected}
+      options={universeOptions}
+    />
+
+    <form class="flex flex-col">
+      <label
+        class="block text-sm font-bold text-slate-700 tracking-tight"
+        for={"ticks-per-frame"}
+        >{ticksPerFrame}
+        {ticksPerFrame > 1 ? "Ticks" : "Tick"} per frame</label
+      >
+      <input
+        bind:value={ticksPerFrame}
+        type="range"
+        id="ticks-per-frame"
+        min="1"
+        max="10"
+      />
+    </form>
+
+    <form class="flex flex-col">
+      <label
+        class="block text-sm font-bold text-slate-700 tracking-tight"
+        for={"ticks-per-frame"}>{gridSize} Cells x Cells</label
+      >
+      <input
+        bind:value={gridSize}
+        type="range"
+        id="ticks-per-frame"
+        min="16"
+        max="224"
+        step="16"
+        on:change={handleGridSizeChange}
+      />
+    </form>
+
+    <Switch addClass="" />
+  </div>
+
+  <canvas bind:this={canvas} on:click={handleCanvasClick} class="m-auto my-4" />
+  <Fps bind:this={fpsComponent} />
 </div>
 
-<Fps bind:this={fpsComponent} />
-<canvas bind:this={canvas} on:click={handleCanvasClick} />
-<form>
-  <label for="ticks-per-frame">Ticks per frame = {ticksPerFrame}</label>
-  <br />
-  <input bind:value={ticksPerFrame} type="range" id="ticks-per-frame" min="1" max="10" />
-</form>
-<form>
-  <label for="ticks-per-frame">Size of grid = {gridSize}</label>
-  <br />
-  <input
-    bind:value={gridSize}
-    type="range"
-    id="ticks-per-frame"
-    min="16"
-    max="224"
-    step="16"
-    on:change={handleGridSizeChange}
-  />
-</form>
-
-<style>
-  p,
-  form,
-  button,
-  h1,
-  div {
-    justify-content: center;
-    display: flex;
-  }
-
-  canvas {
-    margin: auto;
-    display: flex;
-  }
-</style>
+<Settings {hidden} />
