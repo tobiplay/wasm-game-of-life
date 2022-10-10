@@ -1,25 +1,20 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import init, { greet } from "wasm-game-of-life";
+  import init from "wasm-game-of-life";
   import { Universe, Cell, UniverseOption } from "wasm-game-of-life";
   import Fps from "../components/fpsCounter.svelte";
   import Button from "../components/Button.svelte";
-  import Select from "../components/Select.svelte";
-  import Switch from "../components/Switch.svelte";
   import Settings from "../components/Settings.svelte";
-
-  let hidden = true;
-
   import { ticksPerFrame, gridSize, universeTemplate } from "../lib/stores.js";
 
+  // Start with a hidden settings menu.
+  let hidden = true;
   let fpsComponent: any;
-
   let canvas: any;
   let universe: any;
   let ctx: any;
   let height: number;
   let width: number;
-  let frame;
   let wasm;
   let memory: any;
 
@@ -32,7 +27,6 @@
 
     universe = Universe.new(UniverseOption.Dead, $gridSize, $gridSize);
 
-    // Now that an universe exists, we can grab the height and width:
     width = universe.width();
     height = universe.height();
 
@@ -44,7 +38,6 @@
 
     drawGrid();
     drawCells();
-    // render();
     pause();
   });
 
@@ -175,7 +168,7 @@
     ctx.stroke();
   };
 
-  function handleUniverseOptionChange() {
+  function createNewUniverse() {
     if ($universeTemplate == "Random") {
       universe = Universe.new(UniverseOption.Random, $gridSize, $gridSize);
     } else if ($universeTemplate == "TwoSeven") {
@@ -243,8 +236,11 @@
 
   const handleResetClick = () => {
     pause();
-    universe = Universe.new(UniverseOption.Dead, $gridSize, $gridSize);
-    drawCells();
+    handleUniverseOptionChange();
+  };
+
+  const handleUniverseOptionChange = () => {
+    createNewUniverse();
   };
 
   // We store an animationId, which will be used

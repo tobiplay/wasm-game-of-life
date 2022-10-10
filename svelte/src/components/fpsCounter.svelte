@@ -63,10 +63,11 @@
 <p
   class="{$showFps
     ? ''
-    : 'hidden'} font-mono uppercase text-xs text-slate-700 tracking-widest absolute ml-2 px-4 py-3 mt-2 sm:mt-2 sm:ml-2 bg-gray-50 bg-opacity-75 backdrop-filter backdrop-blur-sm border border-gray-100 rounded-lg shadow-lg divide-y divide-gray-100 focus:outline-none left-0 top-0"
+    : 'hidden'} font-mono uppercase text-xs text-slate-700 tracking-wide absolute ml-2 px-4 py-3 mt-2 sm:mt-2 sm:ml-2 bg-gray-50 bg-opacity-75 backdrop-filter backdrop-blur-sm border border-gray-100 rounded-lg shadow-lg divide-y divide-gray-100 focus:outline-none left-0 top-0"
 >
-  Latest: {Math.round(fps)} <br />
-  AVG of last 100 = {frames.length < 100 ? NaN : Math.round(mean)} <br />
-  MIN of last 100 = {frames.length < 100 ? NaN : Math.round(min)} <br />
-  MAX of last 100 = {frames.length < 100 ? NaN : Math.round(max)}
+  <b>Latest</b>:
+  {Math.round(fps)} <br />
+  <b>AVG</b> (last 100): {frames.length < 100 ? NaN : Math.round(mean)} <br />
+  <b>MIN</b> (last 100): {frames.length < 100 ? NaN : Math.round(min)} <br />
+  <b>MAX</b> (last 100): {frames.length < 100 ? NaN : Math.round(max)}
 </p>
