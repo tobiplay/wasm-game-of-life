@@ -5,10 +5,13 @@
   import Fps from "../components/fpsCounter.svelte";
   import Button from "../components/Button.svelte";
   import Settings from "../components/Settings.svelte";
-  import { ticksPerFrame, gridSize, universeTemplate } from "../lib/stores.js";
+  import {
+    ticksPerFrame,
+    gridSize,
+    universeTemplate,
+    hidden,
+  } from "../lib/stores.js";
 
-  // Start with a hidden settings menu.
-  let hidden = true;
   let fpsComponent: any;
   let canvas: any;
   let universe: any;
@@ -230,6 +233,10 @@
     animationId = null;
   };
 
+  const toggleSettings = () => {
+    $hidden = !$hidden;
+  };
+
   const handlePlayPauseClick = () => {
     isPaused() ? play() : pause();
   };
@@ -324,11 +331,9 @@
     />
     <Button
       text={"Settings"}
-      onClick={() => {
-        hidden = !hidden;
-      }}
       id="hide"
       type={"secondary"}
+      onClick={toggleSettings}
     />
   </div>
 </div>
@@ -336,4 +341,4 @@
 <canvas bind:this={canvas} on:click={handleCanvasClick} class="m-auto my-4" />
 <Fps bind:this={fpsComponent} />
 
-<Settings {hidden} {handleGridSizeChange} {handleUniverseOptionChange} />
+<Settings {handleGridSizeChange} {handleUniverseOptionChange} />

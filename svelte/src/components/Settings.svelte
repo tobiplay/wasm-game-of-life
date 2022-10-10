@@ -1,7 +1,7 @@
 <script lang="ts">
   import Switch from "./Switch.svelte";
+  import { hidden } from "../lib/stores.js";
 
-  export let hidden: boolean;
   export let handleGridSizeChange: any;
   export let handleUniverseOptionChange: any;
 
@@ -9,9 +9,12 @@
 </script>
 
 <div
-  class="{hidden
+  class="{$hidden
     ? 'hidden'
     : ''} absolute w-[calc(100vw-1rem)] mr-0 sm:w-56 mt-4 sm:mt-2 sm:mr-2 bg-gray-50 bg-opacity-75 backdrop-filter backdrop-blur-sm border border-gray-100 rounded-lg shadow-lg divide-y divide-gray-100 focus:outline-none right-0 top-0"
+  on:mouseleave={() => {
+    $hidden = true;
+  }}
 >
   <div class="py-2" role="none">
     <div class="flex flex-col px-4 py-3 w-full space-y-1">
