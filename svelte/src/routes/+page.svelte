@@ -8,12 +8,13 @@
   import Switch from "../components/Switch.svelte";
   import Settings from "../components/Settings.svelte";
 
-  let hidden = false;
+  let hidden = true;
+
+  import { ticksPerFrame, gridSize, universeTemplate } from "../lib/stores.js";
 
   let fpsComponent: any;
 
   let canvas: any;
-  let ticksPerFrame: number = 1;
   let universe: any;
   let ctx: any;
   let height: number;
@@ -21,7 +22,6 @@
   let frame;
   let wasm;
   let memory: any;
-  let gridSize: number = 64;
 
   onMount(async () => {
     // We need to init the WASM module once before we can use it.
@@ -30,7 +30,7 @@
 
     ctx = canvas.getContext("2d");
 
-    universe = Universe.new(UniverseOption.Dead, gridSize, gridSize);
+    universe = Universe.new(UniverseOption.Dead, $gridSize, $gridSize);
 
     // Now that an universe exists, we can grab the height and width:
     width = universe.width();
@@ -172,12 +172,12 @@
   };
 
   function handleUniverseOptionChange() {
-    if (selected.id === universeOptions[0].id) {
-      universe = Universe.new(UniverseOption.Dead, gridSize, gridSize);
-    } else if (selected.id === universeOptions[1].id) {
-      universe = Universe.new(UniverseOption.Random, gridSize, gridSize);
-    } else if (selected.id === universeOptions[2].id) {
-      universe = Universe.new(UniverseOption.TwoSeven, gridSize, gridSize);
+    if ($universeTemplate == "Random") {
+      universe = Universe.new(UniverseOption.Random, $gridSize, $gridSize);
+    } else if ($universeTemplate == "TwoSeven") {
+      universe = Universe.new(UniverseOption.TwoSeven, $gridSize, $gridSize);
+    } else {
+      universe = Universe.new(UniverseOption.Dead, $gridSize, $gridSize);
     }
     drawCells();
   }
@@ -218,7 +218,7 @@
     drawCells();
   }
 
-  let playPauseState = "Pause";
+  let playPauseState = "Resume";
 
   const play = () => {
     playPauseState = "Pause";
@@ -240,7 +240,7 @@
   const handleResetClick = () => {
     pause();
     selected = universeOptions[0];
-    universe = Universe.new(UniverseOption.Dead, gridSize, gridSize);
+    universe = Universe.new(UniverseOption.Random, $gridSize, $gridSize);
     drawCells();
   };
 
@@ -257,7 +257,7 @@
   const handleGridSizeChange = () => {
     handleResetClick();
     ctx = canvas.getContext("2d");
-    universe = Universe.new(UniverseOption.Dead, gridSize, gridSize);
+    universe = Universe.new(UniverseOption.Dead, $gridSize, $gridSize);
     width = universe.width();
     height = universe.height();
     canvas.height = (CELL_SIZE + 1) * height + 1;
@@ -277,7 +277,7 @@
 
     // We'll tick the universe as many times as the user
     // has selected via the slider:
-    for (let i = 0; i < ticksPerFrame; i++) {
+    for (let i = 0; i < $ticksPerFrame; i++) {
       universe.tick();
     }
 
@@ -332,53 +332,9 @@
       type={"secondary"}
     />
   </div>
-
-  <div class="space-y-2 ml-auto mr-auto">
-    <Select
-      addClass=""
-      id={"universe-select"}
-      onChange={handleUniverseOptionChange}
-      bindValue={selected}
-      options={universeOptions}
-    />
-
-    <form class="flex flex-col">
-      <label
-        class="block text-sm font-bold text-slate-700 tracking-tight"
-        for={"ticks-per-frame"}
-        >{ticksPerFrame}
-        {ticksPerFrame > 1 ? "Ticks" : "Tick"} per frame</label
-      >
-      <input
-        bind:value={ticksPerFrame}
-        type="range"
-        id="ticks-per-frame"
-        min="1"
-        max="10"
-      />
-    </form>
-
-    <form class="flex flex-col">
-      <label
-        class="block text-sm font-bold text-slate-700 tracking-tight"
-        for={"ticks-per-frame"}>{gridSize} Cells x Cells</label
-      >
-      <input
-        bind:value={gridSize}
-        type="range"
-        id="ticks-per-frame"
-        min="16"
-        max="224"
-        step="16"
-        on:change={handleGridSizeChange}
-      />
-    </form>
-
-    <Switch addClass="" />
-  </div>
-
-  <canvas bind:this={canvas} on:click={handleCanvasClick} class="m-auto my-4" />
-  <Fps bind:this={fpsComponent} />
 </div>
 
-<Settings {hidden} />
+<canvas bind:this={canvas} on:click={handleCanvasClick} class="m-auto my-4" />
+<Fps bind:this={fpsComponent} />
+
+<Settings {hidden} {handleGridSizeChange} {handleUniverseOptionChange} />

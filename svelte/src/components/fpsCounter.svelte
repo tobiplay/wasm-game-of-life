@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { showFps } from "../lib/stores";
+
   var someNumber = 0;
   var min = 0;
   var max = 0;
@@ -58,7 +60,11 @@
   }
 </script>
 
-<p class="font-mono flex justify-center text-xs">
+<p
+  class="{$showFps
+    ? ''
+    : 'hidden'} font-mono uppercase text-xs text-slate-700 tracking-widest absolute left-2 top-2"
+>
   Frames per second: <br />
   Latest: {Math.round(fps)} <br />
   AVG of last 100 = {frames.length < 100 ? NaN : Math.round(mean)} <br />
