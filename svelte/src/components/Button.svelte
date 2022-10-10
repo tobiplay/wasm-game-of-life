@@ -7,7 +7,7 @@
 
 {#if type == "primary"}
   <button
-    class="inline-flex justify-center rounded-lg text-sm font-semibold py-3 px-4 bg-indigo-700 text-white hover:bg-indigo-900"
+    class="inline-flex justify-center rounded-lg text-sm font-semibold py-3 px-4 bg-indigo-600 text-white hover:bg-indigo-800"
     on:click={onClick}
     {id}>{text}</button
   >

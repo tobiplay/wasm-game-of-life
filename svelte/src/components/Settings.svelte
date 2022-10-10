@@ -26,7 +26,7 @@
       >
       <select
         id="universe-template"
-        class="w-full"
+        class="w-full bg-transparent p-1 border-slate-200 border-2 uppercase font-mono text-xs tracking-widest rounded-md focus:border-indigo-600 focus:outline-none"
         bind:value={$universeTemplate}
         on:change={handleUniverseOptionChange}
       >
@@ -48,7 +48,7 @@
         id="ticks-per-frame"
         min="1"
         max="10"
-        class="w-full"
+        class="w-full accent-indigo-600"
       />
     </div>
     <div class="flex flex-col px-4 py-3 w-full space-y-1">
@@ -65,7 +65,7 @@
         min="16"
         max="128"
         step="16"
-        class="w-full"
+        class="w-full accent-indigo-600"
       />
     </div>
 

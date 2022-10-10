@@ -53,7 +53,7 @@
   const GRID_COLOR = "#CCCCCC";
   // const GRID_COLOR = '#FFFFFF';
   const DEAD_COLOR = "#FFFFFF";
-  const ALIVE_COLOR = "#00FF00";
+  const ALIVE_COLOR = "#000bbb";
 
   // const DYING_1_COLOR = '#0a2d27';
   // const DYING_2_COLOR = '#13594e';
@@ -243,8 +243,7 @@
 
   const handleResetClick = () => {
     pause();
-    selected = universeOptions[0];
-    universe = Universe.new(UniverseOption.Random, $gridSize, $gridSize);
+    universe = Universe.new(UniverseOption.Dead, $gridSize, $gridSize);
     drawCells();
   };
 
@@ -308,7 +307,7 @@
   </h1>
   <p class="justify-center flex text-md tracking-tight text-slate-700">
     Visit the <a
-      class="mx-1 text-indigo-600 hover:underline"
+      class="mx-1 text-indigo-600 hover:underline hover:text-indigo-800"
       href="https://github.com/tobiplay/wasm-game-of-life"
       >repository on GitHub</a
     > to read about the project.
