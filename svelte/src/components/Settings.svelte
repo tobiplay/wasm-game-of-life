@@ -12,10 +12,6 @@
   class="{hidden
     ? 'hidden'
     : ''} absolute w-[calc(100vw-1rem)] mr-0 sm:w-56 mt-4 sm:mt-2 sm:mr-2 bg-gray-50 bg-opacity-75 backdrop-filter backdrop-blur-sm border border-gray-100 rounded-lg shadow-lg divide-y divide-gray-100 focus:outline-none right-0 top-0"
-  aria-labelledby="headlessui-menu-button-549"
-  id="headlessui-menu-items-591"
-  role="menu"
-  tabindex="0"
 >
   <div class="py-2" role="none">
     <div class="flex flex-col px-4 py-3 w-full space-y-1">
@@ -26,7 +22,7 @@
       >
       <select
         id="universe-template"
-        class="w-full bg-transparent p-1 border-slate-200 border-2 uppercase font-mono text-xs tracking-widest rounded-md focus:border-indigo-600 focus:outline-none"
+        class="w-full bg-transparent p-1 border-slate-300 border-2 uppercase font-mono text-xs tracking-widest rounded-md focus:border-indigo-600 focus:outline-none"
         bind:value={$universeTemplate}
         on:change={handleUniverseOptionChange}
       >
