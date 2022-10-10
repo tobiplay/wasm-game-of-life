@@ -91,7 +91,11 @@
     // Dump the cells into an array of unsigned 8-bit integers.
     // The array is supposed to be width * height in size.
 
-    const cells = new Uint8Array(memory.buffer, cellsPtr, width * height);
+    const cells = new Uint8Array(
+      memory.buffer,
+      cellsPtr,
+      $gridSize * $gridSize
+    );
 
     ctx.beginPath();
 

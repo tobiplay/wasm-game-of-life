@@ -63,7 +63,7 @@
         type="range"
         id="grid-size"
         min="16"
-        max="256"
+        max="128"
         step="16"
         class="w-full"
       />
