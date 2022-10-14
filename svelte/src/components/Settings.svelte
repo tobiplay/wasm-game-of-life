@@ -14,12 +14,15 @@
     ? 'hidden'
     : ''} absolute w-[calc(100vw-1em)] sm:max-w-sm bg-gray-50 bg-opacity-75 m-2 backdrop-filter backdrop-blur-sm border border-gray-100 rounded-lg shadow-lg divide-y divide-gray-100 focus:outline-none right-0 top-0"
   {id}
+  on:mouseleave={() => {
+    $hidden = true;
+  }}
 >
   <div class="py-2" role="none">
     <button
       on:click={() => ($hidden = true)}
-      class="-my-1 mx-1 font-mono uppercase text-xs text-slate-700
-      tracking-widest justify-right flex ml-auto hover:underline"
+      class="-my-1 mx-1 font-mono uppercase text-xs text-indigo-600
+      tracking-widest justify-right flex ml-auto hover:underline hover:text-indigo-800"
     >
       [close]
     </button>
