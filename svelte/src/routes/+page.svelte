@@ -10,6 +10,7 @@
     gridSize,
     universeTemplate,
     hidden,
+    cellSize,
   } from "../lib/stores.js";
 
   let fpsComponent: any;
@@ -21,10 +22,6 @@
   let wasm;
   let memory: any;
   let innerWidth: number;
-
-  function onKeydown(event: any) {
-    console.log("test");
-  }
 
   onMount(async () => {
     // We need to init the WASM module once before we can use it.
@@ -41,8 +38,8 @@
     // Give the canvas room for all of our cells and a 1 px border
     // around each of them. For each cell we add 1 px (border) and
     // another 1 px to the whole canvas (outer border).
-    canvas.height = (CELL_SIZE + 1) * height + 1;
-    canvas.width = (CELL_SIZE + 1) * width + 1;
+    canvas.height = ($cellSize + 1) * height + 1;
+    canvas.width = ($cellSize + 1) * width + 1;
 
     drawGrid();
     drawCells();
@@ -121,10 +118,10 @@
         // border on the left, and another one for each previous
         // cell due to its border too.
         ctx.fillRect(
-          col * (CELL_SIZE + 1) + 1,
-          row * (CELL_SIZE + 1) + 1,
-          CELL_SIZE,
-          CELL_SIZE
+          col * ($cellSize + 1) + 1,
+          row * ($cellSize + 1) + 1,
+          $cellSize,
+          $cellSize
         );
       }
     }
@@ -141,10 +138,10 @@
         }
 
         ctx.fillRect(
-          col * (CELL_SIZE + 1) + 1,
-          row * (CELL_SIZE + 1) + 1,
-          CELL_SIZE,
-          CELL_SIZE
+          col * ($cellSize + 1) + 1,
+          row * ($cellSize + 1) + 1,
+          $cellSize,
+          $cellSize
         );
       }
     }
@@ -164,17 +161,17 @@
     // Vertical lines.
     for (let i = 0; i <= width; i++) {
       // Move the pointer to the top position in the grid.
-      ctx.moveTo(i * (CELL_SIZE + 1) + 1, 0);
+      ctx.moveTo(i * ($cellSize + 1) + 1, 0);
       // Draw a line downwards from that position until
       // we reach the very bottom of the canvas.
-      ctx.lineTo(i * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * height + 1);
+      ctx.lineTo(i * ($cellSize + 1) + 1, ($cellSize + 1) * height + 1);
     }
 
     // Horizontal lines. This works basically the same as the vertical
     // lines.
     for (let j = 0; j <= height; j++) {
-      ctx.moveTo(0, j * (CELL_SIZE + 1) + 1);
-      ctx.lineTo((CELL_SIZE + 1) * width + 1, j * (CELL_SIZE + 1) + 1);
+      ctx.moveTo(0, j * ($cellSize + 1) + 1);
+      ctx.lineTo(($cellSize + 1) * width + 1, j * ($cellSize + 1) + 1);
     }
 
     // The stroke() methode actually draws the lines then.
@@ -212,8 +209,8 @@
     // stay within a certain cell. We take the minimum of that result
     // and 1 px less than the height of the `Universe` in cases where we might
     // land exactly on the border.
-    const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
-    const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
+    const row = Math.min(Math.floor(canvasTop / ($cellSize + 1)), height - 1);
+    const col = Math.min(Math.floor(canvasLeft / ($cellSize + 1)), width - 1);
 
     if (e.shiftKey) {
       universe.toggle_glider(row, col);
@@ -276,8 +273,8 @@
     universe = Universe.new(UniverseOption.Dead, $gridSize, $gridSize);
     width = universe.width();
     height = universe.height();
-    canvas.height = (CELL_SIZE + 1) * height + 1;
-    canvas.width = (CELL_SIZE + 1) * width + 1;
+    canvas.height = ($cellSize + 1) * height + 1;
+    canvas.width = ($cellSize + 1) * width + 1;
     drawGrid();
   };
 
@@ -286,8 +283,8 @@
     // and re-calculate both dimensions due to a change in the
     // cell size.
     ctx = canvas.getContext("2d");
-    canvas.height = (CELL_SIZE + 1) * height + 1;
-    canvas.width = (CELL_SIZE + 1) * width + 1;
+    canvas.height = ($cellSize + 1) * height + 1;
+    canvas.width = ($cellSize + 1) * width + 1;
 
     // With an overall resize, we actually have to
     // re-render both the grid and cells afterwards.
@@ -329,9 +326,9 @@
 <svelte:window
   on:resize={() => {
     if (innerWidth <= 512) {
-      CELL_SIZE = 2;
+      $cellSize = 2;
     } else {
-      CELL_SIZE = 5;
+      $cellSize = 5;
     }
     handleCellSizeChange();
   }}
@@ -376,5 +373,10 @@
   <canvas bind:this={canvas} on:click={handleCanvasClick} class="m-auto my-4" />
   <Fps bind:this={fpsComponent} />
 
-  <Settings {handleGridSizeChange} {handleUniverseOptionChange} id="settings" />
+  <Settings
+    {handleGridSizeChange}
+    {handleUniverseOptionChange}
+    {handleCellSizeChange}
+    id="settings"
+  />
 </div>

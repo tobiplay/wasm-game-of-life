@@ -1,8 +1,9 @@
 <script lang="ts">
   import Switch from "./Switch.svelte";
-  import { hidden } from "../lib/stores.js";
+  import { cellSize, hidden } from "../lib/stores.js";
 
   export let handleGridSizeChange: any;
+  export let handleCellSizeChange: any;
   export let handleUniverseOptionChange: any;
   export let id: string;
 
@@ -24,7 +25,7 @@
       class="-my-1 mx-1 font-mono uppercase text-xs text-indigo-600
       tracking-widest justify-right flex ml-auto hover:underline hover:text-indigo-800"
     >
-      [close]
+      [x close]
     </button>
     <div class="flex flex-col px-4 py-3 w-full space-y-1">
       <label
@@ -43,19 +44,20 @@
         <option>TwoSeven</option>
       </select>
     </div>
+
     <div class="flex flex-col px-4 py-3 w-full space-y-1">
       <label
         for="ticks-per-frame"
         class="font-mono uppercase text-xs text-slate-700 tracking-widest"
-        >{$ticksPerFrame}
-        {$ticksPerFrame > 1 ? "Ticks" : "Tick"} per frame</label
+        >Cells are {$cellSize} px</label
       >
       <input
-        bind:value={$ticksPerFrame}
+        bind:value={$cellSize}
+        on:change={handleCellSizeChange}
         type="range"
-        id="ticks-per-frame"
+        id="cell-size"
         min="1"
-        max="10"
+        max="5"
         class="w-full accent-indigo-600"
       />
     </div>
@@ -78,6 +80,23 @@
     </div>
 
     <hr class="mt-2 pb-2 border-gray-200" />
+
+    <div class="flex flex-col px-4 py-3 w-full space-y-1">
+      <label
+        for="ticks-per-frame"
+        class="font-mono uppercase text-xs text-slate-700 tracking-widest"
+        >{$ticksPerFrame}
+        {$ticksPerFrame > 1 ? "Ticks" : "Tick"} per frame</label
+      >
+      <input
+        bind:value={$ticksPerFrame}
+        type="range"
+        id="ticks-per-frame"
+        min="1"
+        max="10"
+        class="w-full accent-indigo-600"
+      />
+    </div>
     <div class="flex flex-col px-4 py-3 w-full space-y-1">
       <label
         for="fps-counter"

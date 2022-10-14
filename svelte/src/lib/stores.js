@@ -5,3 +5,4 @@ export const gridSize = writable(64);
 export const showFps = writable(false);
 export const universeTemplate = writable("Empty");
 export const hidden = writable(true);
+export const cellSize = writable(5);
