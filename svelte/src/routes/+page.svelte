@@ -1,57 +1,77 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import init, { greet } from 'wasm-game-of-life';
-  import { Universe, Cell, UniverseOption } from 'wasm-game-of-life';
-  import Fps from '../components/fpsCounter.svelte';
+  import { onMount } from "svelte";
+  import init from "wasm-game-of-life";
+  import { Universe, Cell, UniverseOption } from "wasm-game-of-life";
+  import Fps from "../components/fpsCounter.svelte";
+  import Button from "../components/Button.svelte";
+  import Settings from "../components/Settings.svelte";
+  import {
+    ticksPerFrame,
+    gridSize,
+    universeTemplate,
+    hidden,
+    cellSize,
+  } from "../lib/stores.js";
 
   let fpsComponent: any;
-
   let canvas: any;
-  let ticksPerFrame: number = 1;
   let universe: any;
   let ctx: any;
   let height: number;
   let width: number;
-  let frame;
   let wasm;
   let memory: any;
-  let gridSize: number = 64;
+  let innerWidth: number;
 
   onMount(async () => {
     // We need to init the WASM module once before we can use it.
     wasm = await init();
     memory = wasm.memory;
 
-    ctx = canvas.getContext('2d');
+    ctx = canvas.getContext("2d");
 
-    universe = Universe.new(UniverseOption.Dead, gridSize, gridSize);
+    universe = Universe.new(UniverseOption.Dead, $gridSize, $gridSize);
 
-    // Now that an universe exists, we can grab the height and width:
     width = universe.width();
     height = universe.height();
 
     // Give the canvas room for all of our cells and a 1 px border
     // around each of them. For each cell we add 1 px (border) and
     // another 1 px to the whole canvas (outer border).
-    canvas.height = (CELL_SIZE + 1) * height + 1;
-    canvas.width = (CELL_SIZE + 1) * width + 1;
+    canvas.height = ($cellSize + 1) * height + 1;
+    canvas.width = ($cellSize + 1) * width + 1;
 
     drawGrid();
     drawCells();
-    // render();
     pause();
+
+    // For mobile devices we have to keep track of the innerWidth
+    // and listen to any changes to that value. We'll change the
+    // pixel size accordingly for the canvas element then.
+    innerWidth = window.innerWidth;
   });
 
   // Define some constants to represent cells:
-  const CELL_SIZE = 5; // Unit is px.
-  const GRID_COLOR = '#CCCCCC';
-  const DEAD_COLOR = '#FFFFFF';
-  const ALIVE_COLOR = '#00FF00';
+  let CELL_SIZE = 5; // Unit is px.
+  const GRID_COLOR = "#CCCCCC";
+  // const GRID_COLOR = '#FFFFFF';
+  const DEAD_COLOR = "#FFFFFF";
+  const ALIVE_COLOR = "#000bbb";
+
+  // const DYING_1_COLOR = '#0a2d27';
+  // const DYING_2_COLOR = '#13594e';
+  // const DYING_3_COLOR = '#1d8676';
+  // const DYING_4_COLOR = '#26b29d';
+  // const DYING_5_COLOR = '#30dfc4';
+  // const DYING_6_COLOR = '#59e5d0';
+  // const DYING_7_COLOR = '#83ecdc';
+  // const DYING_8_COLOR = '#acf2e7';
+  // const DYING_9_COLOR = '#d6f9f3';
 
   let universeOptions = [
-    { id: 0, text: 'Empty' },
-    { id: 1, text: 'Random' },
-    { id: 2, text: 'TwoSeven' }
+    { id: 0, text: "Empty" },
+    { id: 1, text: "Random" },
+    { id: 2, text: "TwoSeven" },
   ];
 
   let selected: any;
@@ -74,7 +94,11 @@
     // Dump the cells into an array of unsigned 8-bit integers.
     // The array is supposed to be width * height in size.
 
-    const cells = new Uint8Array(memory.buffer, cellsPtr, width * height);
+    const cells = new Uint8Array(
+      memory.buffer,
+      cellsPtr,
+      $gridSize * $gridSize
+    );
 
     ctx.beginPath();
 
@@ -93,7 +117,12 @@
         // We create a rectangle and shift 1 to the right for the
         // border on the left, and another one for each previous
         // cell due to its border too.
-        ctx.fillRect(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE, CELL_SIZE);
+        ctx.fillRect(
+          col * ($cellSize + 1) + 1,
+          row * ($cellSize + 1) + 1,
+          $cellSize,
+          $cellSize
+        );
       }
     }
 
@@ -108,7 +137,12 @@
           continue;
         }
 
-        ctx.fillRect(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE, CELL_SIZE);
+        ctx.fillRect(
+          col * ($cellSize + 1) + 1,
+          row * ($cellSize + 1) + 1,
+          $cellSize,
+          $cellSize
+        );
       }
     }
 
@@ -127,30 +161,30 @@
     // Vertical lines.
     for (let i = 0; i <= width; i++) {
       // Move the pointer to the top position in the grid.
-      ctx.moveTo(i * (CELL_SIZE + 1) + 1, 0);
+      ctx.moveTo(i * ($cellSize + 1) + 1, 0);
       // Draw a line downwards from that position until
       // we reach the very bottom of the canvas.
-      ctx.lineTo(i * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * height + 1);
+      ctx.lineTo(i * ($cellSize + 1) + 1, ($cellSize + 1) * height + 1);
     }
 
     // Horizontal lines. This works basically the same as the vertical
     // lines.
     for (let j = 0; j <= height; j++) {
-      ctx.moveTo(0, j * (CELL_SIZE + 1) + 1);
-      ctx.lineTo((CELL_SIZE + 1) * width + 1, j * (CELL_SIZE + 1) + 1);
+      ctx.moveTo(0, j * ($cellSize + 1) + 1);
+      ctx.lineTo(($cellSize + 1) * width + 1, j * ($cellSize + 1) + 1);
     }
 
     // The stroke() methode actually draws the lines then.
     ctx.stroke();
   };
 
-  function handleUniverseOptionChange() {
-    if (selected.id === universeOptions[0].id) {
-      universe = Universe.new(UniverseOption.Dead, gridSize, gridSize);
-    } else if (selected.id === universeOptions[1].id) {
-      universe = Universe.new(UniverseOption.Random, gridSize, gridSize);
-    } else if (selected.id === universeOptions[2].id) {
-      universe = Universe.new(UniverseOption.TwoSeven, gridSize, gridSize);
+  function createNewUniverse() {
+    if ($universeTemplate == "Random") {
+      universe = Universe.new(UniverseOption.Random, $gridSize, $gridSize);
+    } else if ($universeTemplate == "TwoSeven") {
+      universe = Universe.new(UniverseOption.TwoSeven, $gridSize, $gridSize);
+    } else {
+      universe = Universe.new(UniverseOption.Dead, $gridSize, $gridSize);
     }
     drawCells();
   }
@@ -175,8 +209,8 @@
     // stay within a certain cell. We take the minimum of that result
     // and 1 px less than the height of the `Universe` in cases where we might
     // land exactly on the border.
-    const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
-    const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
+    const row = Math.min(Math.floor(canvasTop / ($cellSize + 1)), height - 1);
+    const col = Math.min(Math.floor(canvasLeft / ($cellSize + 1)), width - 1);
 
     if (e.shiftKey) {
       universe.toggle_glider(row, col);
@@ -191,19 +225,23 @@
     drawCells();
   }
 
-  let playPauseState = 'Pause';
+  let playPauseState = "Resume";
 
   const play = () => {
-    playPauseState = 'Pause';
+    playPauseState = "Pause";
     // Restart the animation by requesting the renderLoop:
     renderLoop();
   };
 
   const pause = () => {
-    playPauseState = 'Play';
+    playPauseState = "Resume";
     // Cancel the animation via the animationId:
     cancelAnimationFrame(animationId);
     animationId = null;
+  };
+
+  const toggleSettings = () => {
+    $hidden = !$hidden;
   };
 
   const handlePlayPauseClick = () => {
@@ -212,9 +250,11 @@
 
   const handleResetClick = () => {
     pause();
-    selected = universeOptions[0];
-    universe = Universe.new(UniverseOption.Dead, gridSize, gridSize);
-    drawCells();
+    handleUniverseOptionChange();
+  };
+
+  const handleUniverseOptionChange = () => {
+    createNewUniverse();
   };
 
   // We store an animationId, which will be used
@@ -229,13 +269,27 @@
 
   const handleGridSizeChange = () => {
     handleResetClick();
-    ctx = canvas.getContext('2d');
-    universe = Universe.new(UniverseOption.Dead, gridSize, gridSize);
+    ctx = canvas.getContext("2d");
+    universe = Universe.new(UniverseOption.Dead, $gridSize, $gridSize);
     width = universe.width();
     height = universe.height();
-    canvas.height = (CELL_SIZE + 1) * height + 1;
-    canvas.width = (CELL_SIZE + 1) * width + 1;
+    canvas.height = ($cellSize + 1) * height + 1;
+    canvas.width = ($cellSize + 1) * width + 1;
     drawGrid();
+  };
+
+  const handleCellSizeChange = () => {
+    // We have to re-access the canvas with a 2D context
+    // and re-calculate both dimensions due to a change in the
+    // cell size.
+    ctx = canvas.getContext("2d");
+    canvas.height = ($cellSize + 1) * height + 1;
+    canvas.width = ($cellSize + 1) * width + 1;
+
+    // With an overall resize, we actually have to
+    // re-render both the grid and cells afterwards.
+    drawGrid();
+    drawCells();
   };
 
   // The JavaScript portion of our program runs in a
@@ -250,7 +304,7 @@
 
     // We'll tick the universe as many times as the user
     // has selected via the slider:
-    for (let i = 0; i < ticksPerFrame; i++) {
+    for (let i = 0; i < $ticksPerFrame; i++) {
       universe.tick();
     }
 
@@ -267,65 +321,62 @@
   };
 </script>
 
-<h1>Conway's Game of Life</h1>
-<p>
-  Visit the <a style="margin-inline: .25em;" href="https://github.com/tobiplay/wasm-game-of-life"
-    >repository on GitHub</a
-  > to read about the project.
-</p>
-<form>
-  <label for="select-universe">Choose a starting universe:</label>
-  <select
-    name="select-universe"
-    id="select-universe"
-    bind:value={selected}
-    on:change={handleUniverseOptionChange}
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+
+<svelte:window
+  on:resize={() => {
+    if (innerWidth <= 512) {
+      $cellSize = 2;
+    } else {
+      $cellSize = 5;
+    }
+    handleCellSizeChange();
+  }}
+  bind:innerWidth
+/>
+
+<div class="my-4 mx-2">
+  <h1
+    class="text-3xl sm:text-4xl text-center font-extrabold tracking-tight text-slate-900 "
   >
-    {#each universeOptions as option}
-      <option value={option}>
-        {option.text}
-      </option>
-    {/each}
-  </select>
-</form>
-<div>
-  <button id="play-pause" on:click={handlePlayPauseClick}>{playPauseState}</button>
-  <button id="reset" on:click={handleResetClick}>Reset</button>
-</div>
+    Oxidized Game of Life.
+  </h1>
+  <p class="justify-center text-center text-md tracking-tight text-slate-700">
+    Visit the <a
+      class="mx-1 text-indigo-600 hover:underline hover:text-indigo-800"
+      href="https://github.com/tobiplay/wasm-game-of-life"
+      >repository on GitHub</a
+    > to read about the project.
+  </p>
 
-<Fps bind:this={fpsComponent} />
-<canvas bind:this={canvas} on:click={handleCanvasClick} />
-<form>
-  <label for="ticks-per-frame">Ticks per frame = {ticksPerFrame}</label>
-  <br />
-  <input bind:value={ticksPerFrame} type="range" id="ticks-per-frame" min="1" max="10" />
-</form>
-<form>
-  <label for="ticks-per-frame">Size of grid = {gridSize}</label>
-  <br />
-  <input
-    bind:value={gridSize}
-    type="range"
-    id="ticks-per-frame"
-    min="16"
-    max="224"
-    step="16"
-    on:change={handleGridSizeChange}
+  <div class="justify-center flex space-x-2 mt-8">
+    <Button
+      text={playPauseState}
+      onClick={handlePlayPauseClick}
+      id="play-pause"
+      type={"primary"}
+    />
+    <Button
+      text={"Reset"}
+      onClick={handleResetClick}
+      id="reset"
+      type={"secondary"}
+    />
+    <Button
+      text={"Settings"}
+      id="hide"
+      type={"secondary"}
+      onClick={toggleSettings}
+    />
+  </div>
+
+  <canvas bind:this={canvas} on:click={handleCanvasClick} class="m-auto my-4" />
+  <Fps bind:this={fpsComponent} />
+
+  <Settings
+    {handleGridSizeChange}
+    {handleUniverseOptionChange}
+    {handleCellSizeChange}
+    id="settings"
   />
-</form>
-
-<style>
-  p,
-  form,
-  button,
-  h1,
-  div {
-    justify-content: center;
-    display: flex;
-  }
-
-  canvas {
-    margin: auto;
-    display: flex;
-  }
-</style>
+</div>
