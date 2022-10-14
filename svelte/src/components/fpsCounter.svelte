@@ -63,7 +63,7 @@
 <p
   class="{$showFps
     ? ''
-    : 'hidden'} font-mono uppercase text-xs text-slate-700 tracking-wide absolute ml-2 px-4 py-3 mt-2 sm:mt-2 sm:ml-2 bg-gray-50 bg-opacity-75 backdrop-filter backdrop-blur-sm border border-gray-100 rounded-lg shadow-lg divide-y divide-gray-100 focus:outline-none left-0 top-0"
+    : 'hidden'} font-mono uppercase text-xs text-slate-700 tracking-wide absolute px-4 py-3 mt-2 m-2 bg-gray-50 bg-opacity-75 backdrop-filter backdrop-blur-sm border border-gray-100 rounded-lg shadow-lg divide-y divide-gray-100 focus:outline-none left-0 top-0"
 >
   <b>Latest</b>:
   {Math.round(fps)} <br />

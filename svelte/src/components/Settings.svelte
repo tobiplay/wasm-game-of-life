@@ -4,6 +4,7 @@
 
   export let handleGridSizeChange: any;
   export let handleUniverseOptionChange: any;
+  export let id: string;
 
   import { ticksPerFrame, gridSize, universeTemplate } from "../lib/stores.js";
 </script>
@@ -11,12 +12,17 @@
 <div
   class="{$hidden
     ? 'hidden'
-    : ''} absolute w-[calc(100vw-1rem)] mr-0 sm:w-56 mt-4 sm:mt-2 sm:mr-2 bg-gray-50 bg-opacity-75 backdrop-filter backdrop-blur-sm border border-gray-100 rounded-lg shadow-lg divide-y divide-gray-100 focus:outline-none right-0 top-0"
-  on:mouseleave={() => {
-    $hidden = true;
-  }}
+    : ''} absolute w-[calc(100vw-1em)] sm:max-w-sm bg-gray-50 bg-opacity-75 m-2 backdrop-filter backdrop-blur-sm border border-gray-100 rounded-lg shadow-lg divide-y divide-gray-100 focus:outline-none right-0 top-0"
+  {id}
 >
   <div class="py-2" role="none">
+    <button
+      on:click={() => ($hidden = true)}
+      class="-my-1 mx-1 font-mono uppercase text-xs text-slate-700
+      tracking-widest justify-right flex ml-auto hover:underline"
+    >
+      [close]
+    </button>
     <div class="flex flex-col px-4 py-3 w-full space-y-1">
       <label
         for="universe-template"

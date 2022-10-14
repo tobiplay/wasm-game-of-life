@@ -20,6 +20,11 @@
   let width: number;
   let wasm;
   let memory: any;
+  let innerWidth: number;
+
+  function onKeydown(event: any) {
+    console.log("test");
+  }
 
   onMount(async () => {
     // We need to init the WASM module once before we can use it.
@@ -42,10 +47,15 @@
     drawGrid();
     drawCells();
     pause();
+
+    // For mobile devices we have to keep track of the innerWidth
+    // and listen to any changes to that value. We'll change the
+    // pixel size accordingly for the canvas element then.
+    innerWidth = window.innerWidth;
   });
 
   // Define some constants to represent cells:
-  const CELL_SIZE = 5; // Unit is px.
+  let CELL_SIZE = 5; // Unit is px.
   const GRID_COLOR = "#CCCCCC";
   // const GRID_COLOR = '#FFFFFF';
   const DEAD_COLOR = "#FFFFFF";
@@ -271,6 +281,20 @@
     drawGrid();
   };
 
+  const handleCellSizeChange = () => {
+    // We have to re-access the canvas with a 2D context
+    // and re-calculate both dimensions due to a change in the
+    // cell size.
+    ctx = canvas.getContext("2d");
+    canvas.height = (CELL_SIZE + 1) * height + 1;
+    canvas.width = (CELL_SIZE + 1) * width + 1;
+
+    // With an overall resize, we actually have to
+    // re-render both the grid and cells afterwards.
+    drawGrid();
+    drawCells();
+  };
+
   // The JavaScript portion of our program runs in a
   // requestAnimationFrame loop. On each iteration,
   // it draws the current universe to the <canvas>,
@@ -302,13 +326,25 @@
 
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 
+<svelte:window
+  on:resize={() => {
+    if (innerWidth <= 512) {
+      CELL_SIZE = 2;
+    } else {
+      CELL_SIZE = 5;
+    }
+    handleCellSizeChange();
+  }}
+  bind:innerWidth
+/>
+
 <div class="my-4 mx-2">
   <h1
-    class="text-3xl sm:text-4xl justify-center flex font-extrabold tracking-tight text-slate-900 "
+    class="text-3xl sm:text-4xl text-center font-extrabold tracking-tight text-slate-900 "
   >
     Oxidized Game of Life.
   </h1>
-  <p class="justify-center flex text-md tracking-tight text-slate-700">
+  <p class="justify-center text-center text-md tracking-tight text-slate-700">
     Visit the <a
       class="mx-1 text-indigo-600 hover:underline hover:text-indigo-800"
       href="https://github.com/tobiplay/wasm-game-of-life"
@@ -336,9 +372,9 @@
       onClick={toggleSettings}
     />
   </div>
+
+  <canvas bind:this={canvas} on:click={handleCanvasClick} class="m-auto my-4" />
+  <Fps bind:this={fpsComponent} />
+
+  <Settings {handleGridSizeChange} {handleUniverseOptionChange} id="settings" />
 </div>
-
-<canvas bind:this={canvas} on:click={handleCanvasClick} class="m-auto my-4" />
-<Fps bind:this={fpsComponent} />
-
-<Settings {handleGridSizeChange} {handleUniverseOptionChange} />
