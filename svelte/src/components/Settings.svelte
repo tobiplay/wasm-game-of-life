@@ -73,7 +73,7 @@
         type="range"
         id="grid-size"
         min="16"
-        max="128"
+        max="512"
         step="16"
         class="w-full accent-indigo-600"
       />
